@@ -6,7 +6,7 @@ choice="${1}"
 
 if [ -z "${choice}"  ]
 then
-	echo "Please what to do" 
+	echo "Please select what to do" 
 	echo " 1 : configure in release mode "
 	echo " 2 : configure in fastdebug mode "
 	echo " 3 : configure in slowdebug mode"
@@ -31,20 +31,20 @@ then
 	bash ./configure --prefix=/lv_scratch/scratch/wcx/jdk8u-self-build   --with-debug-level=fastdebug --disable-zip-debug-info
 	exit	
 
-elif	[	"${choice}" == "3"	]
+elif	[	"${choice}" = "3"	]
 then	
 	echo "bash ./configure --prefix=/lv_scratch/scratch/wcx/jdk8u-self-build   --with-debug-level=slowdebug --disable-zip-debug-info"	
 	sleep 1
 	bash ./configure --prefix=/lv_scratch/scratch/wcx/jdk8u-self-build   --with-debug-level=slowdebug --disable-zip-debug-info
 	exit	
 
-elif	[	"${choice}" == "4"	]
+elif	[	"${choice}" = "4"	]
 then
 	echo "ssh plsys@glacier.cs.ucla.edu"
 	ssh plsys@glacier.cs.ucla.edu
 	exit	
 
-elif	[	"${choice}" == "5"	]
+elif	[	"${choice}" = "5"	]
 then
 	echo "ssh wcx@buckeye.cs.ucla.edu"
 	ssh wcx@buckeye.cs.ucla.edu
