@@ -8,10 +8,10 @@
 defaultLimit="65536"
 
 ### control the running times
-running_times=1
+running_times=2
 
 ### java heap size
-heapSize="16g"
+heapSize="12g"
 
 #################
 ## First run
@@ -22,6 +22,9 @@ heapSize="16g"
 #### Basic ####
 
 confVar="on"
+gcMode="G1"
+#gcMode="STW"
+#gcMode="CMS"
 #youngLocation="1"
 #oldLocation="1"
 #dramSpaceRatio="0"
@@ -222,48 +225,66 @@ do
   if [ -n "${confVar}" ]
   then
 	
-	# set -XyoungGenOnNode#
-	if [ -n "${youngLocation}" ]
-	then
-	  youngOn="-XyoungGenOnNode${youngLocation}"
-	else
-	  youngOn=""
-	fi
+		# set -XyoungGenOnNode#
+		if [ -n "${youngLocation}" ]
+		then
+	  	youngOn="-XyoungGenOnNode${youngLocation}"
+		else
+	  	youngOn=""
+		fi
 
-	# set -XoldGenOnNode#
-	if [ -n "${oldLocation}"  ]
-	then
-	  oldOn="-XoldGenOnNode${oldLocation}"
-	else
-	  oldOn=""
-	fi
-
-
-	# set -XX:NewRatio=#  or -XX:NewSize=#  -XX:MaxNewSize=#
-	if [ -n "${youngRatio}" ]
-	then
-	  youngGenRatio="-XX:NewRatio=${youngRatio}"
-	elif [ -n "${youngFixedSize}" ]
-	then
-	  initYoung="-XX:NewSize=${youngFixedSize}" 
-	  maxYoung="-XX:MaxNewSize=${youngFixedSize}"
-	else
-	  youngRatio=""
-	  initYoung=""
-	  maxYoung=""
-	fi
-
-	# set dram_space 
-	if [ -n "${dramSpaceRatio}" ]
-	then
-	  dramRatioOfOld="-XrddPercentageOfOld${dramSpaceRatio}"
-	else
-	  dramRatioOfOld=""
-	fi
+		# set -XoldGenOnNode#
+		if [ -n "${oldLocation}"  ]
+		then
+	  	oldOn="-XoldGenOnNode${oldLocation}"
+		else
+	  	oldOn=""
+		fi
 
 
-## Basic mode
-	confVar="spark.executor.extraJavaOptions= -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=8  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps "
+		# set -XX:NewRatio=#  or -XX:NewSize=#  -XX:MaxNewSize=#
+		if [ -n "${youngRatio}" ]
+		then
+	  	youngGenRatio="-XX:NewRatio=${youngRatio}"
+		elif [ -n "${youngFixedSize}" ]
+		then
+	  	initYoung="-XX:NewSize=${youngFixedSize}" 
+	  	maxYoung="-XX:MaxNewSize=${youngFixedSize}"
+		else
+	  	youngRatio=""
+	  	initYoung=""
+	  	maxYoung=""
+		fi
+
+		# set dram_space 
+		if [ -n "${dramSpaceRatio}" ]
+		then
+	  	dramRatioOfOld="-XrddPercentageOfOld${dramSpaceRatio}"
+		else
+	  	dramRatioOfOld=""
+		fi
+
+
+		## Basic mode 
+
+		if [ ${gcMode} = "G1" ]
+		then	
+			## G1 GC 
+			#confVar="spark.executor.extraJavaOptions= -XX:+UseG1GC  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=8  -XX:ConcGCThreads=2  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps "
+			#confVar="spark.executor.extraJavaOptions= -XX:+UseG1GC  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=8  -XX:ConcGCThreads=2 -XX:+PrintGCApplicationStoppedTime"
+			confVar="spark.executor.extraJavaOptions= -XX:+UseG1GC  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:+PrintGCApplicationStoppedTime"
+		elif [ ${gcMode} = "STW" ]
+		then
+			## STW -  Parallel GC 
+			confVar="spark.executor.extraJavaOptions=  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=8  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps "
+		elif	[ "${gcMode}" = CMS"" ]
+		then
+			## Concurrent  Mark & Sweep GC
+			confVar="spark.executor.extraJavaOptions=  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:+UseConcMarkSweepGC  -XX:+PrintGCApplicationStoppedTime  "
+		else
+			echo "!! GC Mode ERROR  !!"
+			exit
+		fi
 
 	# combine all the parameters
 #	confVar="spark.executor.extraJavaOptions= -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  ${youngOn} ${oldOn} ${dramRatioOfOld} -XobjArrayLengthLimit${defaultLimit}  -XX:MaxDirectMemorySize=60g   -XX:ParallelGCThreads=16  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps "
@@ -276,24 +297,23 @@ do
   fi
 
   #log
-  echo ""								  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1
-  echo ""								  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1
+  echo ""								  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1
+  echo ""								  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1
-  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1
-  echo "Run ${mode} mode, with ${Iter} Iteration"  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1
+  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1
+  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1
+  echo "Run ${mode} mode, with ${Iter} Iteration"  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1
 
 
   # run the application
-  (time -p  spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /lv_scratch/scratch/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/${InputSet} ${Iter} 8 ) >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.log" 2>&1 
+  (time -p  spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /lv_scratch/scratch/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/${InputSet} ${Iter} 8 ) >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${youngOn}.${oldOn}.${dramRatioOfOld}.${gcMode}.log" 2>&1 
 
 
 
 
-  #### handle the 2nd application
 
   count=`expr $count + 1 `
 done

@@ -15,17 +15,14 @@ logFile=$1
 if [ -z "$logFile" ]
 then
   echo "Print in screen "
-  echo "pid ${executorId}" 
+  echo "pid${executorId}" 
+  #amplxe-cl -target-pid=${executorId} -data-limit=0 -collect memory-access  -knob dram-bandwidth-limits=false  -knob analyze-mem-objects=true
   amplxe-cl -target-pid=${executorId} -data-limit=0 -collect memory-access  -knob dram-bandwidth-limits=false
-#  amplxe-cl -target-pid=${executorId} -data-limit=0   -collect general-exploration  -knob collect-memory-bandwidth=true  -knob dram-bandwidth-limits=true
-#  amplxe-cl -target-pid=${executorId} -data-limit=0 -collect advanced-hotspots
 else
   echo "dump in ${logFile}"
   echo -e "\n\n\n" >> ${logFile}
-  echo "pid ${executorId}" >> ${logFile}
+  echo "pid${executorId}" >> ${logFile}
   amplxe-cl -target-pid=${executorId} -data-limit=0 -collect memory-access -knob dram-bandwidth-limits=false   >> ${logFile} 
-#  amplxe-cl -target-pid=${executorId} -data-limit=0 -collect concurrency   >> ${logFile} 
-#  amplxe-cl -target-pid=${executorId} -data-limit=0 -collect locksandwaits  >> ${logFile} 
 fi
 
 
