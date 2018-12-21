@@ -1,6 +1,28 @@
 #! /bin/bash
 
 
+
+### pre-defined function ###
+
+
+function start_spark(){
+	user=`whoami`
+	
+	echo "login to master & start spark:"
+	ssh ${user}@python.cs.ucla.edu  start-all.sh
+}
+
+
+function stop_spark(){
+	user=`whoami`
+	
+	echo "login to master & stop spark :"
+	ssh ${user}@python.cs.ucla.edu  stop-all.sh
+}
+
+
+
+
 choice=$1
 
 if [ -z "${choice}" ]
@@ -16,9 +38,13 @@ fi
 
 if [ "${choice}" = "1"  ]
 then
+
+	stop_spark
 	
-	echo "scp -r ${SPARK_HOME}/conf  wcx@buckeye.cs.ucla.edu:${SPARK_HOME}/ "
-	scp -r ${SPARK_HOME}/conf  wcx@buckeye.cs.ucla.edu:${SPARK_HOME}/	
+	echo "scp -r ${SPARK_HOME}/conf  wcx@zion-1.cs.ucla.edu:${SPARK_HOME}/ "
+	scp -r ${SPARK_HOME}/conf  wcx@zion-1.cs.ucla.edu:${SPARK_HOME}/	
+	
+	start_spark
 
 	exit 
 
