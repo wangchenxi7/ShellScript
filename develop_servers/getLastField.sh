@@ -12,10 +12,10 @@ fi
 if [ -z "${delimiter}"  ]
 then
 	echo "Default delimiter is SPACE  "
-	delimiter=" "
+	delimiter=' '
 fi
 
 
-cat ${file} | rev | cut -d ${delimiter} | rev
+cat ${file} | rev | cut -d "${delimiter}" -f1 | rev
 
 
