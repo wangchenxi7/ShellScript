@@ -35,7 +35,7 @@ else
   echo "dump in ${logFile}"
   echo -e "\n\n\n" >> ${logFile}
   echo "pid${executorId}" >> ${logFile}
-  amplxe-cl -data-limit=0   -target-pid=${executorId}  -collect-with runsa  -knob event-config=${PMUEvent} >> ${logFile} 
+  amplxe-cl -data-limit=0   -target-pid=${executorId}  -collect-with runsa  -knob event-config=${PMUEvent} >> ${logFile} 2>&1 
 fi
 
 

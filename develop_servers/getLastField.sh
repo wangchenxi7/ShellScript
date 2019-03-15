@@ -16,6 +16,6 @@ then
 fi
 
 
-cat ${file} | rev | cut -d "${delimiter}" -f1 | rev
+grep "Pause" ${file} | rev | cut -d "${delimiter}" -f1 | rev
 
 

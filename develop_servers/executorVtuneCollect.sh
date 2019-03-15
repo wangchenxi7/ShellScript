@@ -22,7 +22,7 @@ else
   echo "dump in ${logFile}"
   echo -e "\n\n\n" >> ${logFile}
   echo "pid${executorId}" >> ${logFile}
-  amplxe-cl -target-pid=${executorId} -data-limit=0 -collect memory-access -knob dram-bandwidth-limits=false   >> ${logFile} 
+  amplxe-cl -target-pid=${executorId} -data-limit=0 -collect memory-access -knob dram-bandwidth-limits=false   >> ${logFile} 2>&1 
 fi
 
 
