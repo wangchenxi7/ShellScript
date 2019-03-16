@@ -27,8 +27,8 @@ confVar="on"
 #dramSpaceRatio="0"
 #youngRatio="5"	
 #youngFixedSize=""
-gcMode="STW"
-
+#gcMode="STW"
+gcMode="DEBUG_EXECUTOR"
 
 ###  Young/Old = 1:5    ###
 
@@ -131,6 +131,10 @@ do
 		then
 			## Concurrent  Mark & Sweep GC
 			confVar="spark.executor.extraJavaOptions=  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:+UseConcMarkSweepGC  -XX:+PrintGCApplicationStoppedTime  "
+		elif	[ "${gcMode}" = "DEBUG_EXECUTOR"  ]
+		then
+			## STW, debug the executor in a step by step way
+			confVar="spark.executor.extraJavaOptions= -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=${partitionsNum}  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps"
 		else
 			echo "!! GC Mode ERROR  !!"
 			exit
