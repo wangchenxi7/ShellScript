@@ -11,9 +11,10 @@
 running_times=1
 
 ### java heap size
-heapSize="60g"
-partitionsNum="2"
-tag="dram"
+heapSize="40g"
+partitionsNum="1"
+GCParallism="1"
+tag="debug"
 #################
 ## First run
 #############
@@ -29,8 +30,8 @@ confVar="on"
 #youngRatio="5"	
 #youngFixedSize=""
 #debugMode="DEBUG_MASTER"
-debugMode="DEBUG_EXECUTOR"
-
+#debugMode="DEBUG_EXECUTOR"
+debugMode="DEBUG_CORRECTNESS"
 
 
 
@@ -103,7 +104,13 @@ do
 		elif	[ "${debugMode}" = "DEBUG_EXECUTOR"  ]
 		then
 			## STW, debug the executor in a step by step way
-			confVar="spark.executor.extraJavaOptions= -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=${partitionsNum}  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps"
+			confVar="spark.executor.extraJavaOptions= -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=${GCParallism}  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps"
+
+		elif	[ "${debugMode}" = "DEBUG_CORRECTNESS"  ]
+		then
+			## STW, debug the correctness of Spark and JDK
+			confVar="spark.executor.extraJavaOptions= -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung}  -XX:ParallelGCThreads=${partitionsNum}  -XX:+PrintGCDetails  -XX:+PrintGCTimeStamps"
+
 		else
 			echo "!! debug Mode ERROR  !!"
 			exit
