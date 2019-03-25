@@ -14,6 +14,7 @@ then
 	echo " 5 : connect to wcx@buckeys server "
 	echo " 6 : connect to wcx@zion-1 server	"
 	echo " 7 : connect to wcx@zion-2 server "
+	echo " 8 : connect to ICT server	"
 
 	read choice
 	echo "You select ${choice}"
@@ -69,7 +70,12 @@ elif	[	"${choice}" = "7"	]
 then
 	echo "ssh wcx@zion-2.cs.ucla.edu"
 	ssh wcx@zion-2.cs.ucla.edu
-	exit	
+
+
+elif	[	"${choice}" = "8"	]
+then
+	echo "ssh -oPort=3392 wcx@35.201.152.240"
+	ssh -oPort=3392 wcx@35.201.152.240
 
 else
 	echo "!!The input is WRONG!!"
