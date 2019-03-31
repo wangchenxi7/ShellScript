@@ -10,13 +10,14 @@
 running_times=1
 
 ### java heap size
-heapSize="32g"
+heapSize="60g"
 tag="profiling-spark"
 GCParallelism="8" 
 
 ### Applications control
 partitionsNum="16"
-
+#centerNum="5"
+AppName="graphx-sssp"
 
 
 #################
@@ -66,8 +67,8 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
 
 if [ -z "$1" ]
 then
-  echo "Please enter the input set"
-  exit 1
+  echo "Use default input set : out.wikipedia_link_en"
+	InputSet="out.wikipedia_link_en"
 else
   InputSet=$1
 fi
@@ -76,8 +77,8 @@ fi
 
 if [ -z "$2" ]
 then
-  echo "Please enter the PageRank Iteration Number"
-  exit 1
+	echo "Use defualt iteration number (start vertex number): 1"
+	Iter="1"
 else
   Iter=$2
 fi
@@ -85,8 +86,8 @@ fi
 #run the 1st application
 if [ -z "$3" ]
 then
-  echo "Please select app mode : i.e. pagerank-dram, kmeans-nvm (support multi-choice)"
-  exit 1
+	echo "Use default mode : dram"
+	mode="dram"
 else
   mode="$3"
 fi
@@ -146,23 +147,23 @@ do
 
   else
 	#set a useless parameter for --conf
-	confVar="spark.app.name=SparkPageRank"
+	confVar="spark.app.name=GraphX-SSSP"
   fi
 
   #log
-  echo ""								  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
-  echo ""								  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo ""								  >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo ""								  >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
-  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
-  echo "Run ${mode} mode, with ${Iter} Iteration"  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "" >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "" >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "Run ${AppName}.${mode}.mode, with ${Iter} Iteration"  >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
 
 
   # run the application
-  (time -p  spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /mnt/data/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/${InputSet} ${Iter} ${partitionsNum} ) >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1 
+  (time -p  spark-submit --class org.apache.spark.examples.graphx.SSSPExample   --conf "${confVar}"  /mnt/data/wcx/Spark-app-jars/SparkApp-assembly-graphx-sssp-${mode}.jar  /graphx/${InputSet} ${Iter} ${partitionsNum}) >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1 
 
 
 
