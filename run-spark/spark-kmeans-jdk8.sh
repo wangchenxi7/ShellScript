@@ -162,7 +162,7 @@ do
 
 
   # run the application
-  (time -p  spark-submit --class org.apache.spark.examples.SparkKMeans   --conf "${confVar}"  /mnt/data/wcx/Spark-app-jars/SparkApp-assembly-kmeans-${mode}.jar   /basic/${InputSet} ${centerNum}  ${Iter} ${partitionsNum} ) >> "${AppName}.${mode}.${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1 
+  (time -p  spark-submit --class org.apache.spark.examples.SparkKMeans   --conf "${confVar}"  /mnt/ssd/wcx/Spark-app-jars/SparkApp-assembly-kmeans-${mode}.jar   /basic/${InputSet} ${centerNum}  ${Iter} ${partitionsNum} ) >> "${AppName}.${mode}.${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1 
 
 
 

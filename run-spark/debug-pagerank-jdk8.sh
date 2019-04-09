@@ -127,8 +127,8 @@ do
 	
 
   # run the application
-	echo "spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /mnt/data/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/input.debug ${Iter} ${partitionsNum}"
-  spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /mnt/data/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/input.debug ${Iter} ${partitionsNum} 
+	echo "spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /mnt/ssd/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/input.debug ${Iter} ${partitionsNum}"
+  spark-submit --class org.apache.spark.examples.SparkPageRank   --conf "${confVar}"  /mnt/ssd/wcx/Spark-app-jars/SparkApp-assembly-pagerank-${mode}.jar   /basic/input.debug ${Iter} ${partitionsNum} 
 
 
 

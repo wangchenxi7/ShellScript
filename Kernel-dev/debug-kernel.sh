@@ -8,7 +8,7 @@ output_console="ttyS0"
 initram_dir="teeny-linux/obj/initramfs-busybox-x86.cpio.gz"
 
 ### Server environments
-home_dir="/mnt/data/wcx"
+home_dir="/mnt/ssd/wcx"
 
 
 
@@ -33,7 +33,9 @@ fi
 
 
 
-qemu-system-x86_64 -s -S  -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
+#qemu-system-x86_64 -s -S  -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
+
+qemu-system-x86_64 -s  -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
 
 
 

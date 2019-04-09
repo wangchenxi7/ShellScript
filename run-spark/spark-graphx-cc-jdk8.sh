@@ -163,7 +163,7 @@ do
 
 
   # run the application
-  (time -p  spark-submit --class org.apache.spark.examples.graphx.ConnectedComponentsExample   --conf "${confVar}"  /mnt/data/wcx/Spark-app-jars/SparkApp-assembly-GraphX-CC-${mode}.jar  /graphx/${InputSet} ) >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1 
+  (time -p  spark-submit --class org.apache.spark.examples.graphx.ConnectedComponentsExample   --conf "${confVar}"  /mnt/ssd/wcx/Spark-app-jars/SparkApp-assembly-GraphX-CC-${mode}.jar  /graphx/${InputSet} ) >> "${AppName}.${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1 
 
 
 
