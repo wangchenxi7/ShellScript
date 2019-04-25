@@ -39,8 +39,8 @@ home_dir="/mnt/ssd/wcx"
 
 ## Network
 #network="-netdev user,id=mynet0,net=192.168.76.0/24,dhcpstart=192.168.76.9"
-#network="-net nic -net user"
-network="-netdev user,id=network0 -device e1000,netdev=network0,mac=52:54:00:12:34:56"
+network="-net nic -net user,hostfwd=tcp::2222-:22"
+#network="-netdev user,id=network0 -device e1000,netdev=network0,mac=52:54:00:12:34:56  -net user,hostfwd=tcp::10022-:22"
 
 
 ####################

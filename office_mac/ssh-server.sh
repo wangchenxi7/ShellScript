@@ -15,6 +15,8 @@ then
 	echo " 6 : connect to wcx@zion-1 server	"
 	echo " 7 : connect to wcx@zion-2 server "
 	echo " 8 : connect to ICT server	"
+	echo " 9 : login QEMU, wcx@localhost -P2222  "
+	echo " 10 : connect to wcx@lab496nas server "
 
 	read choice
 	echo "You select ${choice}"
@@ -77,6 +79,15 @@ then
 	echo "ssh -oPort=3392 wcx@35.201.152.240"
 	ssh -oPort=3392 wcx@35.201.152.240
 
+elif	[	"${choice}" = "9"	]
+then
+	echo "ssh  wcx@localhost -p2222 "
+	ssh wcx@localhost -p2222
+
+elif	[	"${choice}" = "10"	]
+then
+	echo "ssh  wcx@lab496nas.cs.ucla.edu "
+	ssh  wcx@lab496nas.cs.ucla.edu
 else
 	echo "!!The input is WRONG!!"
 	exit 1
