@@ -6,6 +6,7 @@ echo " 1 : Distribute files"
 echo " 2 : Add public key to other servers"
 echo " 3 : create new users"
 echo " 4 : Check if the servers is online"
+echo " 5 : Delete user from all servers"
 
 Choice=$1
 if [ -z "${Choice}"  ]
@@ -69,6 +70,8 @@ then
 
 	# Change the password
 	echo "=> Update password of  ${Newly_created_user} to  ${password}"
+	## need to pass  `printf "%s\n"`  to the servers, including the \"\".
+	## Shellscrip will interpreter and remove the "" marks.
 	pdsh -w ${servers}  "printf \"%s\n\" ${password} ${password}  | passwd ${Newly_created_user}"
 
 	#if [ -n  "${group}"  ]
