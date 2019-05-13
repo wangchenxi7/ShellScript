@@ -15,10 +15,10 @@ wait_for_gdb="no"
 
 # 1024M, 1G 
 #memory_size="128M"
-memory_size="8G"
+memory_size="64G"
 
 ## core number
-core_num=4
+core_num=8
 
 ## Chose start img or initrd
 #initram_dir="teeny-linux/obj/initramfs-busybox-x86.cpio.gz"
@@ -52,10 +52,15 @@ kernel_version="$1"
 if [ -z "${kernel_version}" ]
 then 
 
-	echo "Use default kernel version linux-4.4.177 "
-	kernel_version="4.4.177"
+	echo "Use default kernel version linux-4.11.0 "
+	kernel_version="4.11.0"
 
-elif [ "${kernel_version}" = "default"  ]
+elif [ "${kernel_version}" = "4.11.0"]
+then
+	echo "Use kernel version linux-4.11.0 "
+	kernel_version="4.11.0"
+
+elif [ "${kernel_version}" = "4.4.177"  ]
 then
 	echo "Use default kernel version linux-4.4.177 "
 	kernel_version="4.4.177"
@@ -116,7 +121,7 @@ echo "\n \n \n" 	>> ~/Logs/qemu.log
 echo "date " 			>> ~/Logs/qemu.log
 echo "qemu-system-x86_64 -s ${wait_for_gdb}   -m ${memory_size}   -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}   ${disk_image}    -nographic -append \"nokaslr console=${output_console}\" " >> ~/Logs/qemu.log
 
-qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
 
 
 
