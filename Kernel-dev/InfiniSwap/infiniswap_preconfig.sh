@@ -14,6 +14,7 @@ then
 	echo "3 : create host"
 	echo "4 : create Infiniswap device and backup device"	
 	echo "5 : Format & Mount the infiniswap partition"	
+	
 	read action 
 
 fi
