@@ -10,7 +10,7 @@
 
 target_ip="10.0.0.2"
 target_port="4420"
-nqn="nvme-subsystem-name"
+nqn="memory_pool"
 
 
 ## Self defined functions
