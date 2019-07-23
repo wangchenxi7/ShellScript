@@ -6,6 +6,13 @@
 ##
 
 
+### Benchmark control
+
+runtime="10"
+#testbench="randread"
+testbench="randwrite"
+
+
 ## Configurations
 
 target_ip="10.0.0.2"
@@ -102,9 +109,9 @@ then
 elif [  "${op}" = "fio"  ]
 then
 
-	echo "sudo fio --bs=64k --numjobs=1 --iodepth=4 --loops=1 --ioengine=libaio --direct=1 --invalidate=1 --fsync_on_close=1 --randrepeat=1 --norandommap --time_based --runtime=60 --filename=/dev/nvme0n1 --name=read-phase --rw=randread"
+	echo "sudo fio --bs=64k --numjobs=1 --iodepth=4 --loops=1 --ioengine=libaio --direct=1 --invalidate=1 --fsync_on_close=1 --randrepeat=1 --norandommap --time_based --runtime=${runtime} --filename=/dev/nvme0n1 --name=read-phase --rw=${testbench}"
 	
-	sudo fio --bs=64k --numjobs=1 --iodepth=4 --loops=1 --ioengine=libaio --direct=1 --invalidate=1 --fsync_on_close=1 --randrepeat=1 --norandommap --time_based --runtime=60 --filename=/dev/nvme0n1 --name=read-phase --rw=randread
+	sudo fio --bs=64k --numjobs=1 --iodepth=4 --loops=1 --ioengine=libaio --direct=1 --invalidate=1 --fsync_on_close=1 --randrepeat=1 --norandommap --time_based --runtime=${runtime} --filename=/dev/nvme0n1 --name=read-write-test --rw=${testbench}
 
 else
 
