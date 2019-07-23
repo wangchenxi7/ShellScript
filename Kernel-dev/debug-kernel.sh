@@ -51,20 +51,23 @@ kernel_version="$1"
 
 if [ -z "${kernel_version}" ]
 then 
+	echo "Use default kernel version linux "
+	kernel_version="linux"
 
-	echo "Use default kernel version linux-4.11.0 "
-	kernel_version="4.11.0"
-
-elif [ "${kernel_version}" = "4.11.0"]
+elif [ "${kernel_version}" = "linux"]
 then
-	echo "Use kernel version linux-4.11.0 "
-	kernel_version="4.11.0"
+	echo "Use kernel version linux "
+	kernel_version="linux"
 
 elif [ "${kernel_version}" = "4.4.177"  ]
 then
 	echo "Use default kernel version linux-4.4.177 "
-	kernel_version="4.4.177"
+	kernel_version="linux-4.4.177"
 
+elif ["${kernel_version}" = "4.11.0"]
+then
+	echo "Use default kernel version linux-4.11.0 "		
+	kernel_version="linux-4.11.0"
 else
 	echo "Use appointed kernel version linux-${kernel_version}"	
 fi
@@ -113,15 +116,15 @@ fi
 #############################
 
 
-#qemu-system-x86_64 -s -S  -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
+#qemu-system-x86_64 -s -S  -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
 
-#qemu-system-x86_64 -s ${wait_for_gdb} ${disk_image}   -m ${memory_size}   -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
+#qemu-system-x86_64 -s ${wait_for_gdb} ${disk_image}   -m ${memory_size}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  -initrd ${home_dir}/${initram_dir} -nographic -append "nokaslr console=${output_console}"
 
 echo "\n \n \n" 	>> ~/Logs/qemu.log
 echo "date " 			>> ~/Logs/qemu.log
-echo "qemu-system-x86_64 -s ${wait_for_gdb}   -m ${memory_size}   -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}   ${disk_image}    -nographic -append \"nokaslr console=${output_console}\" " >> ~/Logs/qemu.log
+echo "qemu-system-x86_64 -s ${wait_for_gdb}   -m ${memory_size}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}   ${disk_image}    -nographic -append \"nokaslr console=${output_console}\" " >> ~/Logs/qemu.log
 
-numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/linux-${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
 
 
 
