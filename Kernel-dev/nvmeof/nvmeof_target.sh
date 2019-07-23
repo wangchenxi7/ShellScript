@@ -21,10 +21,10 @@ block_device="/dev/nullb0"  # Null block device. Discard all the write i/o. Retu
 
 load_client_modules () {
 
-	#sudo modpobe mlx4_core
+	# modpobe mlx4_core
 	
 	echo "modprobe nvme-rdma"
-	sudo modprobe nvme-rdma
+	modprobe nvme-rdma
 
 	echo "Check the loaded nvme modules"
 	lsmod | grep "nvme"
@@ -80,13 +80,15 @@ load_null_block () {
 	if [ "${null_block}" = ""  ]
 	then
 		echo "no null block, create one."
-		sudo modprobe  null_blk nr_devices=1
+		modprobe  null_blk nr_devices=1
 		
 		ls /dev/ | grep "nullb0"
 	else
 		echo "Alread mount null block : ${null_block}"
 	fi
-
+	
+	echo "End of Load Null Block"
+	echo ""
 }
 
 
@@ -102,7 +104,19 @@ Create_nvme_subsystem () {
 
 	#enable the nvme subsystem
 	cd ${nvme_nqn}	
-	echo 1 > attr_allow_any_host
+	current_dir=`pwd`
+	echo "current directory : ${current_dir}"
+
+	if [ "${current_dir}" = "${nvme_nqn}"  ]
+	then
+		echo 1 > attr_allow_any_host
+	else
+		echo "Wrong directory. Abort!"
+	fi
+
+
+	echo "End of create nvme subsystem"
+	echo ""
 }
 
 
@@ -115,18 +129,25 @@ Register_block_device () {
 
 	if [ -e "namespaces/10"  ]
 	then
-		echo "File : ${nvme_nqn}/namespacs/10 exist."
+		echo "File : ${nvme_nqn}/namespaces/10 exist."
 	else
 		mkdir namespaces/10
 	fi	
 
 	cd namespaces/10
-	echo "current path :" 
-	pwd
+	current_dir=`pwd`
 
-	#Set the store disk & enable it
-	echo -n "${block_device}" > device_path
-	echo 1 > enable
+	if [ "${current_dir}" = "${nvme_nqn}/namespaces/10"  ]
+	then
+		#Set the store disk & enable it
+		echo -n "${block_device}" > device_path
+		echo 1 > enable
+	else
+		echo "Wrong directory. Abort!"
+	fi
+
+	echo "End of Register block device"
+	echo ""
 
 }
 
@@ -144,10 +165,16 @@ Start_memory_server () {
 
 	# Set the RDMA (over IP) connection information
 	cd /sys/kernel/config/nvmet/ports/1
-	echo "${target_ip}" > addr_traddr
-	echo rdma > addr_trtype
-	echo ${target_port} > addr_trsvcid
-	echo ipv4 > addr_adrfam
+	current_dir=`pwd`
+	if [ "${current_dir}" =  "/sys/kernel/config/nvmet/ports/1"  ]
+	then
+		echo "${target_ip}" > addr_traddr
+		echo rdma > addr_trtype
+		echo ${target_port} > addr_trsvcid
+		echo ipv4 > addr_adrfam
+	else
+		echo "Wrong directory. Abort seting addr_traddr etc"
+	fi
 
 	# start the server
 	cd /sys/kernel/config/nvmet/ports/1/subsystems
@@ -155,8 +182,17 @@ Start_memory_server () {
 	pwd	
 	echo ""
 
-	ln -s ${nvme_nqn} 
+	current_dir=`pwd`
+	if [ "${current_dir}" =  "/sys/kernel/config/nvmet/ports/1/subsystems"  ]
+	then
+		ln -s ${nvme_nqn} 
+	else
+		echo "Wrong directory. Abort mking the soft link(Start target server)"
+	fi
 
+	echo ""
+	echo "End of Start Target/Memory server"
+	echo ""
 }
 
 
