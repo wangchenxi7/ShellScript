@@ -11,8 +11,11 @@ then
 	echo "Pleaes slect what to do:"
 	echo "1 : close current Swap Partition."
 	echo "2 : load infiniswap module  & remount /sys/kernel/configfs"
+	echo "	2-1 : remote infiniswap module	"
 	echo "3 : create host"
+	echo "  3-1 :  delete host"
 	echo "4 : create Infiniswap device and backup device"	
+	echo "  4-1 : delete block device"
 	echo "5 : Format & Mount the infiniswap partition"	
 	
 	read action 
@@ -20,11 +23,11 @@ then
 fi
 
 
-# Proceed the operation
+## self defined function
 
-if [ "${action}" = "1" ]
-then
- echo "Close current Swap Partition"
+close_swap_partition () {
+
+  echo "Close current Swap Partition"
   swap_bd=$(swapon -s | grep "dev" | cut -d " " -f 1 )
   
   if [ -z "${swap_bd}" ]
@@ -35,6 +38,16 @@ then
     swapoff "${swap_bd}"  
   fi 
 
+}
+
+
+# Proceed the operation
+
+if [ "${action}" = "1" ]
+then
+
+	close_swap_partition
+	
 	# finish operation
 	exit
 
@@ -55,6 +68,12 @@ then
 	# finish operation
 	exit
 
+elif [ "${action}" = "2-1" ]
+then
+	echo "Remove infiniswap module"
+	sleep 1
+	modprobe -r infiniswap
+
 elif [ ${action}	= "3"	]
 then
 	echo ""
@@ -68,6 +87,17 @@ then
 
 	exit
 
+elif [ ${action} = "3-1" ]
+then
+	echo ""
+	echo "delete host"
+	sleep
+	/usr/local/bin/nbdxadm -o delete_host -i 0
+
+	echo ""
+	echo "Check hosts"
+	/usr/local/bin/nbdxadm -o show_all_hosts
+
 elif [ ${action} = "4"  ]
 then
 	echo ""
@@ -78,6 +108,15 @@ then
 	echo ""
 	echo "Check results:"
 	lsblk	
+
+elif [ "${action}" = "4-1"  ]
+then
+	echo ""
+	close_swap_partition
+
+	echo ""
+	echo "Delete the Infiniswap device"
+	/usr/local/bin/nbdxadm -o delete_device -d 0
 
 elif [ "${action}" = "5"  ]
 then

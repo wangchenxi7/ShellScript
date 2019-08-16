@@ -5,8 +5,8 @@
 ####################
 output_console="ttyS0"
 
-#wait_for_gdb="no"  # yes or no
-wait_for_gdb="no"
+wait_for_gdb="yes"  # yes or no
+#wait_for_gdb="no"
 
 
 ####################
@@ -15,7 +15,7 @@ wait_for_gdb="no"
 
 # 1024M, 1G 
 #memory_size="128M"
-memory_size="64G"
+memory_size="60G"  # leave 4G for other processes
 
 ## core number
 core_num=8
@@ -51,25 +51,31 @@ kernel_version="$1"
 
 if [ -z "${kernel_version}" ]
 then 
-	echo "Use default kernel version linux "
-	kernel_version="linux"
+	echo "Use the default kernel of image"
 
-elif [ "${kernel_version}" = "linux"]
+elif [ "${kernel_version}" = "linux" ]
 then
 	echo "Use kernel version linux "
 	kernel_version="linux"
 
 elif [ "${kernel_version}" = "4.4.177"  ]
 then
-	echo "Use default kernel version linux-4.4.177 "
+	echo "Use kernel version linux-4.4.177 "
 	kernel_version="linux-4.4.177"
 
-elif ["${kernel_version}" = "4.11.0"]
+elif [ "${kernel_version}" = "4.11.0" ]
 then
-	echo "Use default kernel version linux-4.11.0 "		
+	echo "Use kernel version linux-4.11.0 "		
 	kernel_version="linux-4.11.0"
+
+elif [ "${kernel_version}" = "4.11-rc8" ]
+then
+	echo "Use kernel version linux-4.11-rc8 "		
+	kernel_version="linux-4.11-rc8"
+
 else
-	echo "Use appointed kernel version linux-${kernel_version}"	
+	echo "Can't find this kernel version : ${kernel_version}"
+	exit 0
 fi
 
 
@@ -77,6 +83,8 @@ fi
 if [ "${wait_for_gdb}" = "yes"  ]
 then
 	wait_for_gdb="-S"
+	echo " Waiting for GDB to connect"
+
 elif [ "${wait_for_gdb}" = "no"  ]
 then
 	wait_for_gdb=""
@@ -124,8 +132,17 @@ echo "\n \n \n" 	>> ~/Logs/qemu.log
 echo "date " 			>> ~/Logs/qemu.log
 echo "qemu-system-x86_64 -s ${wait_for_gdb}   -m ${memory_size}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}   ${disk_image}    -nographic -append \"nokaslr console=${output_console}\" " >> ~/Logs/qemu.log
 
-numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+if [ -z "${kernel_version}"  ]
+then
+	#use the default kernel version image
+	# Can only add kernel command line via grub option
+	# Add nokaslr, console="ttyS0"
+	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}    ${disk_image}    -nographic
 
+else
+	#use a specified kernel version
+	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+fi
 
 
 
