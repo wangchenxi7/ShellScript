@@ -53,7 +53,7 @@ then
 	umount_remote_disk	
 
 
-elif ["${op}" = "remount"  ]
+elif [ "${op}" = "remount"  ]
 then
 
 	umount_remote_disk
@@ -62,7 +62,7 @@ then
 
 else
 
-	echo "!!Wrong Choince!!"
+	echo "!!Wrong Choice!!"
 
 fi
 
