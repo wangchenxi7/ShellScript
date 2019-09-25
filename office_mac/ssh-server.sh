@@ -7,6 +7,7 @@ choice="${1}"
 if [ -z "${choice}"  ]
 then
 	echo "Please what to do" 
+	echo " 0 : connect to CS Department sever : lion.cs.ucla.edu"
 	echo " 1 : connect to wcx@Python Server in Lab 496 "
 	echo " 2 : connect to wcx@paso Server"
 	echo " 3 : connect to wcx@buckeye  server"
@@ -23,7 +24,12 @@ then
 fi
 
 # Do the action
-if [ "${choice}" = "1" ]
+if [  "${choice}" = "0" ]
+then
+	echo "Connect to CS Department sever, lion.cs.ucla.edu"
+	ssh wangchenxi@lion.cs.ucla.edu
+	exit
+elif [ "${choice}" = "1" ]
 then
 	echo "Connect to Python server in Lab 496"
 	ssh wcx@131.179.96.132
