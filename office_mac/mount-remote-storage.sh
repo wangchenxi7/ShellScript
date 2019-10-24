@@ -31,7 +31,7 @@ target_server="$2"
 if [ -z "${target_server}"  ]
 then
 	echo " Slect the mounted server :"
-	echo " zion-1 OR NULL(enter)"
+	echo " zion-1"
 	echo " all"
 	
 	read target_server
@@ -43,9 +43,9 @@ fi
 
 mount_remote_disk () {
 
-	if [ -z "${target_server}"  ]
+	if [ "${target_server}" = "zion-1"  ]
 	then
-		echo "Default : mount Zion-1"	
+		echo " mount Zion-1"	
 		#connect to server zion-1
 		sshfs -o sshfs_sync		  wcx@zion-1.cs.ucla.edu:/mnt/ssd/wcx ${home_dir}/Programs/Zion-1Server
 
@@ -74,10 +74,10 @@ umount_remote_disk () {
 
 	echo "Un-Mount remote partitions : PythonServer, Zion-1Server, Zion-2Server"
 
-	if [ -z "${target_server}"  ]
+	if [ "${target_server}" = "zion-1"  ]
 	then
-		echo "Default : Unmount Zion-1"	
-		umount -f  ${home_dir}/Programs/PythonServer
+		echo " Unmount Zion-1"	
+		umount -f  ${home_dir}/Programs/Zion-1Server
 
 	elif [ "${target_server}" = "all"  ]
 	then
