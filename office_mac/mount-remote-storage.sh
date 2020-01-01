@@ -55,7 +55,8 @@ mount_remote_disk () {
 		echo "all : Mount Python, Zion-1, Zion-2"
 		
 		#Connect to server Python
-		sshfs   -o sshfs_sync   wcx@python.cs.ucla.edu:/mnt/ssd/wcx    ${home_dir}/Programs/PythonServer
+		#sshfs   -o sshfs_sync   wcx@python.cs.ucla.edu:/mnt/ssd/wcx    ${home_dir}/Programs/PythonServer
+		sshfs   -o sshfs_sync   wcx@python.cs.ucla.edu:/mnt/hdd/wcx    ${home_dir}/Programs/PythonServer
 
 		#connect to server zion-1
 		sshfs -o sshfs_sync		  wcx@zion-1.cs.ucla.edu:/mnt/ssd/wcx ${home_dir}/Programs/Zion-1Server
@@ -64,7 +65,7 @@ mount_remote_disk () {
 		sshfs -o sshfs_sync     wcx@zion-2.cs.ucla.edu:/mnt/ssd/wcx ${home_dir}/Programs/Zion-2Server
 
 	else
-		echo "Wrong Target Server \n"
+		echo "Wrong Target Server"
 	fi
 
 }
