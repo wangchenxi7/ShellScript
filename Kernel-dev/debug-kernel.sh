@@ -15,10 +15,11 @@ wait_for_gdb="yes"  # yes or no
 
 # 1024M, 1G 
 #memory_size="128M"
-memory_size="60G"  # leave 4G for other processes
+memory_size="256M"
+#memory_size="60G"  # leave 4G for other processes
 
 ## core number
-core_num=8
+core_num=4
 
 ## Chose start img or initrd
 #initram_dir="teeny-linux/obj/initramfs-busybox-x86.cpio.gz"

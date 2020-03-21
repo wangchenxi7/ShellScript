@@ -79,7 +79,12 @@ then
 	if [ -z "${cpu_freq}"  ]
 	then
 		echo "default 2.6GHz"
-		cpu_freq="0x1A00"
+#		cpu_freq="0x1A00"
+		#cpu_freq="0x100001A00"
+		# if set 0x1A00, the performance of CPU isn't correct.
+		# the most conservative way is to set it as FF, and check the value of 0x198
+		# bit 32, is used to disable turbo, check details in 14.3.2.2 in Intel architecure software development mannual. 
+		cpu_freq="0x10000FF00"
 	fi
 
 	close_intel_pstate	
