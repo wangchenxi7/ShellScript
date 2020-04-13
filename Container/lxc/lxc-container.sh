@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #Environments
-home_dir="/mnt/ssd/wcx"
+home_dir="/home/wcx"
 
 
 echo "1 : container name,  2 : operation, 3 : memory size"
