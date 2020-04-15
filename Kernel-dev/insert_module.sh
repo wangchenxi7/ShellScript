@@ -82,7 +82,7 @@ then
 
 	if [ "${action}" = "insmod"  ]
 	then
-		sudo ${action} ${HOME}/kgdboe/kgdboe.ko device_name=p8p1 udp_port=31337 force_single_core=0
+		sudo ${action} ${HOME}/kgdboe/kgdboe.ko device_name=p8p1 udp_port=31337 force_single_core=1
 	elif [ "${action}" = "rmmod"  ]
 	then
 		sudo ${action} ${HOME}/kgdboe/kgdboe.ko 
@@ -102,8 +102,12 @@ then
 	echo "sudo ${action} ${HOME}/linux-4.11-rc8/semeru/semeru_cpu.ko"
 	sudo ${action} ${HOME}/linux-4.11-rc8/semeru/semeru_cpu.ko
 
-	#3 Mound rmempool as swap partition
-	mount_semeru_as_swap_partition	
+	## Only mount the swap partition for insmod semeru_cpu.ko
+	if [ "${action}" = "insmod"  ]
+	then
+		#3 Mound rmempool as swap partition
+		mount_semeru_as_swap_partition	
+	fi
 
 else
 	echo " !! Wrong module_name : ${module_name} !! "
