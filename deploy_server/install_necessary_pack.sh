@@ -36,5 +36,6 @@ yum install -y patch pciutils-devel perl perl-ExtUtils-Embed pesign python-devel
 yum install -y rpm-build sh-utils tar xmlto xz zlib-devel
 
 
-
+## CGroup
+yum install -y libcgroup libcgroup-tools
 
