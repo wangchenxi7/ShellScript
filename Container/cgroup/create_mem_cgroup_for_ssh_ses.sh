@@ -5,7 +5,7 @@
 # The cgroup will be deleted after exit the ssh session or reboot ?
 
 user=`whoami`
-mem_size="32m"
+mem_size="18g"
 
 #1 Create 
 echo "sudo cgcreate -t ${user} -a ${user} -g memory:/memctl"
