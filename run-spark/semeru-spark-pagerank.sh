@@ -7,15 +7,15 @@
 # all the applications set the same value to avoid the JIT performance overhead
 
 ### control the running times
-running_times=3
+running_times=1
 
 ### java heap size
-heapSize="32g"
+heapSize="8g"
 tag="profiling-spark"
-GCParallelism="16" 
+GCParallelism="6" 
 
 ### Applications control
-partitionsNum="16"
+partitionsNum="6"
 
 
 

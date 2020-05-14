@@ -9,6 +9,8 @@ if [ -z "${zie}"  ]
 then
 	echo "Use default memory size 32GB.(Count by KiB)"
 	size=0x2000000
+else
+	echo "Ram Block Device size ${size}"
 fi
 
 
