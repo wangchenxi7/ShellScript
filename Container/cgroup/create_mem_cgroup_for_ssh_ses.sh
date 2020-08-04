@@ -9,7 +9,7 @@ mem_size=$1
 if [ -z "${mem_size}"  ]
 then
 	echo "Used default memroy size limitations, 4g"
-	mem_size="4g"
+	mem_size="11g"
 else
 	echo "Memory size limitations: ${mem_size}"
 fi
