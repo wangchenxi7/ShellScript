@@ -41,8 +41,8 @@ yum install -y libcgroup libcgroup-tools
 
 
 ## Install RDMA
-yum install -y libibverbs.x86_64  rdma-core-devel rdma-core.x86_64 librdmacm.x86_64
+#yum install -y libibverbs.x86_64  rdma-core-devel rdma-core.x86_64 librdmacm.x86_64
 
 ##
 # For build OpenJDK
-yum install -y  cups-devel cups-devel fontconfig-devel alsa-lib-devel  libXtst-devel libXt-devel libXrender-devel libXrandr-devel libXi-devel
+yum install -y  cups-devel cups-devel fontconfig-devel alsa-lib-devel  libXtst-devel libXt-devel libXrender-devel libXrandr-devel libXi-devel autoconf
