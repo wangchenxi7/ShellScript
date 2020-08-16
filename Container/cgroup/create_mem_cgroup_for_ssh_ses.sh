@@ -4,6 +4,11 @@
 # Create a memory cgroup for current ssh session and the process launched by it.
 # The cgroup will be deleted after exit the ssh session or reboot ?
 
+## Parameters
+# 1st, operation type: create, delete 
+# 2nd, size for cgroup limitation.
+
+operation=$1
 
 if [ -z ${operation} ]
 then
@@ -15,7 +20,7 @@ fi
 if [ "${operation}" = "create"  ]
 then
 
-	mem_size=$1
+	mem_size=$2
 
 	if [ -z "${mem_size}"  ]
 	then
