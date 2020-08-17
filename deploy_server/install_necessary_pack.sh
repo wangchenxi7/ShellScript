@@ -46,3 +46,4 @@ yum install -y libcgroup libcgroup-tools
 ##
 # For build OpenJDK
 yum install -y  cups-devel cups-devel fontconfig-devel alsa-lib-devel  libXtst-devel libXt-devel libXrender-devel libXrandr-devel libXi-devel autoconf
+yum groupinstall -y "Development Tools"
