@@ -14,8 +14,8 @@ wait_for_gdb="yes"  # yes or no
 ###################
 
 # 1024M, 1G 
-#memory_size="128M"
-memory_size="256M"
+#memory_size="256M"	# Will cause frequently swap out
+memory_size="512M"
 #memory_size="60G"  # leave 4G for other processes
 
 ## core number
@@ -105,7 +105,7 @@ then
 else
 	#disk_image=" -drive format=raw,file=${disk_image} "
 	#disk_image=" -drive file=${disk_image},index=0,media=disk,format=raw "
-	disk_image=" -hda ${disk_image}"
+	disk_image=" -hda ${disk_image} -hdb /mnt/ssd/wcx/qemu-files/extra.img"
 fi
 
 

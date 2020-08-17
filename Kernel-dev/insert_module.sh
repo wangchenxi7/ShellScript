@@ -12,7 +12,7 @@ fi
 module_name=$2
 if [ -z "${module_name}"  ]
 then
-	echo "Chose a module: e.g. kgdboe, smeru_cpu"
+	echo "Chose a module: e.g. kgdboe, semeru_cpu"
 	read module_name
 fi
 
@@ -82,7 +82,7 @@ then
 
 	if [ "${action}" = "insmod"  ]
 	then
-		sudo ${action} ${HOME}/kgdboe/kgdboe.ko device_name=p8p1 udp_port=31337 force_single_core=1
+		sudo ${action} ${HOME}/kgdboe/kgdboe.ko device_name=em1 udp_port=31337 force_single_core=1
 	elif [ "${action}" = "rmmod"  ]
 	then
 		sudo ${action} ${HOME}/kgdboe/kgdboe.ko 
