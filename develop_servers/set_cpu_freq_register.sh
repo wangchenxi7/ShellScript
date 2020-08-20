@@ -40,7 +40,7 @@ function set_cpu_freq() {
 	while [ $i  -lt  ${core_num} ]
 	do
 		echo "set cpu[$i] to ${cpu_freq} GHz "
-		wrmsr -p ${i} 0x199 ${cpu_freq}
+		sudo wrmsr -p ${i} 0x199 ${cpu_freq}
 
 		i=`expr $i + 1`
 
@@ -54,7 +54,7 @@ function check_cpu_freq() {
 	while [ $i -lt ${core_num}  ]
 	do
 		echo "Check cpu[$i] status register : 0x198  "
-		rdmsr -p ${i} 0x198
+		sudo rdmsr -p ${i} 0x198
 		
 		i=`expr $i + 1`
 	done
