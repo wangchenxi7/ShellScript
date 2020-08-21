@@ -53,3 +53,8 @@ yum groupinstall -y "Development Tools"
 ## Monitor tools
 # For I/O
 yum install -y sysstat
+
+# For backgroup task
+yum install -y screen
+
+

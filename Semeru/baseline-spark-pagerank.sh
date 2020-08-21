@@ -7,7 +7,7 @@
 # all the applications set the same value to avoid the JIT performance overhead
 
 ### Shell Scrip Control
-running_times=1
+running_times=3
 tag="baseline-pagerank-25-mem"
 
 ### Applications control
@@ -25,11 +25,11 @@ BenchmarkJar="/mnt/ssd/wcx/Benchmark/SparkBench/target/scala-2.12/sparkapp_2.12-
 
 #### G1 GC ####
 
+gcMode="G1"
 confVar="on"
 heapSize="32g"
 youngRatio=""	
 youngFixedSize=""
-gcMode="G1"
 ParallelGCThread="16"
 ConcGCThread="4"
 
@@ -51,11 +51,6 @@ ConcGCThread="4"
 
 echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-dram-old-nvm)"
 
-
-count=1
-
-while [ $count -le $running_times ]
-do
 
   #### run the fisrt application
   if [ -n "${confVar}" ]
@@ -121,9 +116,18 @@ do
   fi
 
 
-  #log
+
+##
+# Start executing the application
+
+count=1
+
+while [ $count -le $running_times ]
+do
+
+  ## log
   echo ""                 >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
+  echo "Runtime Iteration : $count , with executor config ${confVar} " >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
 
 
   echo "" >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
