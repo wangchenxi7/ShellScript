@@ -8,13 +8,17 @@
 
 ## Configurations
 
-target_ip="10.0.0.2"
+# read from command line
+target_ip=""
 target_port="4420"
 
 nqn="memory_pool"
 nvme_nqn="/sys/kernel/config/nvmet/subsystems/${nqn}"
 
-block_device="/dev/nullb0"  # Null block device. Discard all the write i/o. Return undefined data for read i/o requset.
+
+#block_device="/dev/nullb0"  # Null block device. Discard all the write i/o. Return undefined data for read i/o requset.
+block_device="/dev/ram0" # Use brd ramdisk as target memory pool
+
 
 
 ## Self defined functions
@@ -92,6 +96,44 @@ load_null_block () {
 }
 
 
+##
+# Build brd ramdisk
+
+function build_ram_disk () {
+
+  echo "Build ramdisk"
+
+  # KB, Build a 32GB ramdisk, /dev/ram0
+  size=0x2000000
+
+  # rd_nr number of partition;  e.g. only 1 partition /dev/ram0
+  sudo modprobe brd rd_nr=1 rd_size=${size}
+
+  # Check the ramdisk
+  echo "Build ramdisk:"
+  ls ${block_device}
+
+  echo "End of ramdisk build."
+}
+
+
+##
+# Choose a target memory pool to build
+function build_target_memory_pool () {
+  if [ "${block_device}" = "/dev/ram0" ]
+  then
+    build_ram_disk
+  elif [ "${block_device}" = "/dev/nullb0" ]
+  then
+    load_null_block
+  else
+    echo " !! Wrong block device : ${block_device}"
+  fi
+  
+  echo "End of build target memory pool"
+}
+
+
 Create_nvme_subsystem () {
 	echo "Create nvme subsystem : ${nvme_nqn}"
 	
@@ -154,8 +196,17 @@ Register_block_device () {
 
 Start_memory_server () {
 
+  # Get the target/remote memory server's IB ip 
+  if [ -z "${target_ip}" ]
+  then
+    echo "Please enter the ip of IB on Far memory server： e.g. 10.0.0.2" 
+    read target_ip 
+  fi
+  echo "Get target(far) memory srver ip : ${target_ip}"
 	echo "Set network information (${target_ip}:${target_port}) && start the memory server."	
-	
+
+  # Create a port ? 
+  # What's the purpose for this port ?	
 	if [ -e "/sys/kernel/config/nvmet/ports/1"  ]
 	then
 		echo "/sys/kernel/config/nvmet/ports/1 exist. "
@@ -199,6 +250,7 @@ Start_memory_server () {
 
 # Get parameters
 
+
 op="$1"
 
 if [ -z "${op}"  ]
@@ -235,8 +287,9 @@ then
 	echo " Load target modules"
 	load_target_modules	
 
+  
 	echo "Create null block device for test"
-	load_null_block
+	build_target_memory_pool
 
 
 elif [ "${op}" = "reload_modules"  ]
@@ -250,7 +303,7 @@ then
 
 	load_target_modules 
 
-	load_null_block
+	build_target_memory_pool
 
 	Create_nvme_subsystem 
 
@@ -258,9 +311,22 @@ then
 
 	Start_memory_server
 
+elif [ "${op}" = "clear" ]
+then
+  # clear the nvmet and the created subsystem
+  nvmetcli clear
+  
+  # Remove the ramdisk
+  modprobe -r brd
+
+  # remove the nvm modules
+  modprobe -r  nvmet
+  modprobe -r nvmet-rdma
+  modprobe -r nvme-rdma 
+
 else
 
-	echo "Wrong Operation"
+	echo " !! Wrong Operation: ${op}"
 
 fi
 
