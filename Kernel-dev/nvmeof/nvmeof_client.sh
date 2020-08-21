@@ -59,6 +59,40 @@ Connect () {
 }
 
 
+## Self define function
+close_swap_partition () {
+
+  echo "Close current Swap Partition"
+  swap_bd=$(swapon -s | grep "dev" | cut -d " " -f 1 )
+
+  if [ -z "${swap_bd}" ]
+  then
+    echo "Nothing to close."
+  else
+    echo "Swap Partition to close :${swap_bd} "
+    swapoff "${swap_bd}"
+  fi
+
+  #check
+  echo "Current swap partition:"
+  swapon -s
+}
+
+
+
+function mount_nvmet_as_swap () {
+  close_swap_partition
+
+  # Mount the target nvme storage
+  mkswap /dev/nvme0n1
+  swapon /dev/nvme0n1 
+
+  #check
+  echo "Current swap partition:"
+  swapon -s
+}
+
+
 Disconnect () {
 
 	echo "Disconnect all the target servers : ${nqn}"	
@@ -73,7 +107,7 @@ op="$1"
 
 if [ -z "${op}"  ]
 then
-	echo "Choose operation : load_modules,  discover, connect, disconnect"
+	echo "Choose operation : load_modules,  discover, connect, mount_swap, disconnect"
 	echo "Or choose Benchmark : fio"
 	read op
 fi
@@ -92,6 +126,10 @@ then
 
 	Connect
 
+elif [ "${op}" = "mount_swap" ]
+then
+  mount_nvmet_as_swap
+
 elif [  "${op}" = "disconnect"  ]
 then
 
@@ -104,7 +142,7 @@ then
 	load_client_modules
 
 	# echo ""
-	#
+	
 
 elif [  "${op}" = "fio"  ]
 then
