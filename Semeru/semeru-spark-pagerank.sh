@@ -8,13 +8,12 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="semeru-pagerank-25-mem"
+tag="semeru-25-mem"
 
 ### Applications control
 partitionsNum="16"
-pagerankIteration="10"
+pagerankIteration="3"
 InputDataSet="out.wikipedia_link_pl"
-BenchmarkJar="/mnt/ssd/wcx/Benchmark/SparkBench/target/scala-2.12/sparkapp_2.12-1.0.jar"
 
 
 #################
@@ -23,7 +22,7 @@ BenchmarkJar="/mnt/ssd/wcx/Benchmark/SparkBench/target/scala-2.12/sparkapp_2.12-
 
 
 
-#### G1 GC ####
+#### Basic ####
 
 #confVar="on"
 #heapSize="32g"
@@ -36,13 +35,13 @@ BenchmarkJar="/mnt/ssd/wcx/Benchmark/SparkBench/target/scala-2.12/sparkapp_2.12-
 
 #### Semeru ####
 
-gcMode="Semeru"
 confVar="on"
 youngRatio="5"	
-heapSize="32g" #-Xms,  -Xmx is controlled by Spark configuration
+gcMode="Semeru"
+heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 regionSize="512M"
 tlabSize="4096"
-ParallelGCThread="16" 
+ParallelGCThread="16"	# CPU server GC threads 
 # Concurrent Thread is decided on Memory server
 
 #############################
@@ -102,8 +101,11 @@ do
 		elif [ ${gcMode} = "Semeru" ]
 		then
 			## Semeru, CPU server GC
-			confVar="spark.executor.extraJavaOptions= -XX:+UseG1GC -Xms${heapSize} ${youngGenRatio} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool -XX:+PrintGCDetails -Xlog:heap=debug,semeru+rdma=debug"
+		
+			## -XX:EnableBitmap is only used by Spark PageRank
+			confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3   -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} ${youngGenRatio} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=debug,semeru+rdma=debug "
 
+		
 		elif [ ${gcMode} = "STW" ]
 		then
 			## STW -  Parallel GC 
@@ -121,20 +123,26 @@ do
   fi
 
 
+
+
+
+
   #log
-  echo ""                 >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
+  echo ""                 >> "${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.log" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo ""                 >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
-  echo "" >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
-  echo "Run ${mode} mode, with ${Iter} Iteration"  >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
+  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "" >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
+  echo "Run ${mode} mode, with ${Iter} Iteration"  >> "${mode}.inputSet${InputSet}.iter${Iter}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.${tag}.log" 2>&1
 
 
 
   # run the application
-	echo "spark-submit --class SparkPageRank   --conf "${confVar}"  ${BenchmarkJar}  ~/data/${InputDataSet} ${pagerankIteration}"
-  (time -p  spark-submit --class org.apache.spark.basic.SparkPageRank   --conf "${confVar}"  ${BenchmarkJar}  ~/data/${InputDataSet} ${pagerankIteration} ) >> "${HOME}/Logs/${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${gcMode}.log" 2>&1
+	echo "spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/packages/page-rank-1.0.jar ~/data/${InputDataSet} ${pagerankIteration}"
+  (time -p  spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/packages/page-rank-1.0.jar ~/data/${InputDataSet} ${pagerankIteration} ) >> "${tag}.PageRank.inputSet${InputDataSet}.pagerankIteration${pagerankIteration}.heapSize${heapSize}.${youngGenRatio}.${initYoung}.${maxYoung}.${gcMode}.log" 2>&1
 
   count=`expr $count + 1 `
 done

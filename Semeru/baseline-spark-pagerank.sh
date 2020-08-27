@@ -7,8 +7,8 @@
 # all the applications set the same value to avoid the JIT performance overhead
 
 ### Shell Scrip Control
-running_times=3
-tag="baseline-pagerank-25-mem"
+running_times=1
+tag="baseline-pagerank"
 
 ### Applications control
 partitionsNum="16"
@@ -34,14 +34,12 @@ ParallelGCThread="16"
 ConcGCThread="4"
 
 
-#### Semeru ####
+#### STW ####
 
+#gcMode="STW"
 #confVar="on"
 #youngRatio="5"	
-#gcMode="G1"
 #heapSize="32g" #-Xms,  -Xmx is controlled by Spark configuration
-#regionSize="512M"
-#tlabSize="4096"
 
 #ParallelGCThread="16" 
 
