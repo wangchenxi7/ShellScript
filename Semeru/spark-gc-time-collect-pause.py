@@ -1,4 +1,4 @@
-#!/opt/rh/rh-python36/root/usr/bin/python3
+#! /usr/bin/python3
 # before use: scl enable rh-python36 bash
 #
 # Use JVM option : -XX:+PrintGCDetails to print gc logs
@@ -18,7 +18,10 @@ if __name__ == '__main__':
     lines = open(sys.argv[1] + '/0/stdout').readlines()
     for line in lines:
         splitted = line.split()
-        
+
+        if (len(splitted) == 0):
+          continue
+
         if (splitted[-1].endswith('ms') == False ):   # ignore lines not end with time, ##ms    
           continue
 

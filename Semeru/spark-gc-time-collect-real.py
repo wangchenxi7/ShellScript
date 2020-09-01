@@ -1,4 +1,4 @@
-#!/opt/rh/rh-python36/root/usr/bin/python3
+#! /usr/bin/python3
 # before use: scl enable rh-python36 bash
 #
 # Use JVM option : -XX:+PrintGCDetails to print gc logs
