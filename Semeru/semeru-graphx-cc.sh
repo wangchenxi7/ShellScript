@@ -6,8 +6,7 @@
 ### object array recognition limit
 # all the applications set the same value to avoid the JIT performance overhead
 
-
-### Parameters wait for inputing 
+### Parameters wait for inputing
 CPUMemPercentage=$1
 
 if [ -z "${CPUMemPercentage}" ]
@@ -19,11 +18,11 @@ fi
 
 ### Shell Scrip Control
 running_times=1
-tag="semeru-pagerank-${CPUMemPercentage}-mem"
+tag="semeru-graphx-cc-${CPUMemPercentage}-mem"
 
 ### Applications control
-pagerankIteration="10"
-InputDataSet="out.wikipedia_link_pl"
+AppIterations="x"
+InputDataSet="out.2g"
 
 
 #################
@@ -34,14 +33,14 @@ InputDataSet="out.wikipedia_link_pl"
 #### Semeru ####
 
 confVar="on"
+#youngRatio="5"	
 gcMode="Semeru"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 regionSize="512M"
 tlabSize="4096"
 ParallelGCThread="32"	# CPU server GC threads 
-logLevel="info"
-
 # Concurrent Thread is decided on Memory server
+logLevel="info"
 
 
 
@@ -93,28 +92,28 @@ do
 
   else
 	#set a useless parameter for --conf
-	confVar="spark.app.name=SparkPageRank"
+	confVar="spark.app.name=ConnectedComponentsExample"
   fi
 
 
 
 
   #log
-  echo ""  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo ""  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo ""        >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo ""        >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo "" >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo "" >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo "" >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
 
 
 
   # run the application
-	echo "spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/packages/page-rank-1.0.jar ~/data/${InputDataSet} ${pagerankIteration}"
-  (time -p  spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/data/${InputDataSet} ${pagerankIteration} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+	echo "spark-submit --class ConnectedComponentsExample   --conf "${confVar}"  ${HOME}/jars/cc.jar ~/data/${InputDataSet} ${AppIterations}"
+  (time -p  spark-submit --class ConnectedComponentsExample   --conf "${confVar}"  ${HOME}/jars/cc.jar ~/data/${InputDataSet} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
 
   count=`expr $count + 1 `
 done
