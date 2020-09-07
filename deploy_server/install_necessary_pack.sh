@@ -26,7 +26,7 @@ yum install -y ncurses-devel make gcc bc openssl-devel grub2
 yum install -y vim 
 
 # numa control
-yum install numactl numactl-devel numactl-libs
+yum install -y numactl numactl-devel numactl-libs
 
 ##
 # Kernel development
