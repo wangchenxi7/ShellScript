@@ -25,6 +25,8 @@ yum install -y ncurses-devel make gcc bc openssl-devel grub2
 # Install tools
 yum install -y vim 
 
+# numa control
+yum install numactl numactl-devel numactl-libs
 
 ##
 # Kernel development
@@ -42,7 +44,7 @@ yum install -y libcgroup libcgroup-tools
 
 
 ## Install RDMA
-#yum install -y libibverbs.x86_64  rdma-core-devel rdma-core.x86_64 librdmacm.x86_64
+yum install -y libibverbs.x86_64  rdma-core-devel rdma-core.x86_64 librdmacm.x86_64
 
 ##
 # For build OpenJDK
