@@ -37,7 +37,7 @@ yum install -y elfutils-devel elfutils-libelf-devel findutils flex gawk gcc gett
 yum install -y m4 make module-init-tools ncurses-devel net-tools newt-devel numactl-devel openssl
 yum install -y patch pciutils-devel perl perl-ExtUtils-Embed pesign python-devel python-docutils redhat-rpm-config
 yum install -y rpm-build sh-utils tar xmlto xz zlib-devel
-
+yum install -y msr-tools
 
 ## CGroup
 yum install -y libcgroup libcgroup-tools
