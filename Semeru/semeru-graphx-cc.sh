@@ -83,7 +83,7 @@ do
 		then
 			## Semeru, CPU server GC
 		
-			confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3   -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:SemeruLocalCachePercent=${CPUMemPercentage} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
+			confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3  -Xnoclassgc  -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:SemeruLocalCachePercent=${CPUMemPercentage} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
 
 		else
 			echo "!! GC Mode ERROR  !!"
