@@ -8,7 +8,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-pagerank"
+tag="optimal-pagerank-100-mem"
 
 ### Applications control
 partitionsNum="16"
@@ -30,7 +30,7 @@ confVar="on"
 heapSize="32g"
 youngRatio=""	
 youngFixedSize=""
-ParallelGCThread="16"
+ParallelGCThread="32"
 ConcGCThread="4"
 
 
