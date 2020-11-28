@@ -8,13 +8,12 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="gc-prefetch-fusion-pagerank"
+tag="instrument-gc-prefetch-fusion-pagerank"
 
 ### Applications control
-partitionsNum="16"
+partitionsNum="2"
 pagerankIteration="2"
-InputDataSet="out.wikipedia_link_pl"
-#BenchmarkJar="/mnt/ssd/wcx/Benchmark/SparkBench/target/scala-2.12/sparkapp_2.12-1.0.jar"
+InputDataSet="out.wikipedia_link_pl.testcase"
 BenchmarkJar="/mnt/ssd/wcx/jars/pagerank.jar"
 
 
@@ -28,11 +27,11 @@ BenchmarkJar="/mnt/ssd/wcx/jars/pagerank.jar"
 
 gcMode="G1"
 confVar="on"
-heapSize="32g"
+heapSize="4g"
 youngRatio=""	
 youngFixedSize=""
-ParallelGCThread="16"
-ConcGCThread="4"
+ParallelGCThread="2"
+ConcGCThread="2"
 
 
 #### STW ####
@@ -91,7 +90,7 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
 		if [ ${gcMode} = "G1" ]
 		then	
 			## G1 GC 
-			confVar="spark.executor.extraJavaOptions= -agentlib:jvmti_class_instrument  -XX:+UseG1GC -XX:-UseCompressedOops  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung} ${ParallelGCThread} ${ConcGCThread}  -XX:+PrintGCDetails "
+			confVar="spark.executor.extraJavaOptions= -agentlib:jvmti_class_instrument  -XX:+UseG1GC -XX:-UseCompressedOops -XX:+CITraceTypeFlow  -Xms${heapSize} ${youngGenRatio} ${initYoung} ${maxYoung} ${ParallelGCThread} ${ConcGCThread}  -XX:+PrintGCDetails "
 
 		elif [ ${gcMode} = "STW" ]
 		then
