@@ -10,12 +10,13 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="barrier-prefetch-spark-lr-25-mem"
+tag="trace-only-spark-lr-25-mem"
 
 ### Applications control
 AppIterations="10"
 InputDataSet="out.wikipedia_link_en.2.9g"
 #InputDataSet="out.2g"
+#logLevel="trace"
 logLevel="info"
 
 #################
@@ -26,13 +27,13 @@ logLevel="info"
 #### Semeru ####
 
 confVar="on"
-#youngRatio="8"	
+youngRatio="7"	
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 #ParallelGCThread="32"	# CPU server GC threads 
 ConcGCThread="2"
 TPThreadNum="2"
-
+ElemPrefetchNum="4096"
 
 #############################
 # Start run the application
@@ -84,7 +85,7 @@ do
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M  -XX:+TPThreadEnable -XX:PrefetchThreads=${TPThreadNum} -XX:PrefetchNum=4096 -XX:PrefetchSize=1000000  -XX:PrefetchQueueThreshold=64 -XX:G1PrefetchBufferSize=1024  -XX:+PrintGCDetails -Xlog:tpthread=${logLevel}"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M  -XX:PrefetchThreads=${TPThreadNum} -XX:PrefetchNum=${ElemPrefetchNum} -XX:PrefetchSize=1000000  -XX:PrefetchQueueThreshold=64 -XX:G1PrefetchBufferSize=1024  -XX:+PrintGCDetails -Xlog:prefetch=${logLevel}"
 
 		else
 			echo "!! GC Mode ERROR  !!"
