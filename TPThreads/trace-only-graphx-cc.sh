@@ -8,16 +8,15 @@
 
 ### Parameters wait for inputing
 
+
 ### Shell Scrip Control
 running_times=1
-tag="barrier-prefetch-spark-lr-25-mem"
+tag="trace-only-graphx-cc-25-mem"
 
 ### Applications control
-AppIterations="10"
-InputDataSet="out.wikipedia_link_en.2.9g"
-#InputDataSet="out.2g"
-#logLevel="trace"
-logLevel="info"
+AppIterations="x"
+InputDataSet="out.2g"
+
 
 #################
 ## First run
@@ -27,13 +26,17 @@ logLevel="info"
 #### Semeru ####
 
 confVar="on"
-#youngRatio="8"	
+#youngRatio="5"
+youngGenSize="4g"	
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
-ParallelGCThread="16"	# CPU server GC threads 
-ConcGCThread="2"
+#ParallelGCThread="32"	# CPU server GC threads 
+ConcGCThread="1"
 TPThreadNum="2"
-ElemPrefetchNum="2048"
+ElemPrefetchNum="8192"
+logLevel="info"
+
+
 
 #############################
 # Start run the application
@@ -67,25 +70,13 @@ do
 			ConcGCThread=""
 		fi
 
-    if [ -n "${youngRatio}" ]
-    then
-      youngRatio="-XX:NewRatio=${youngRatio}"
-    else
-      youngRatio=""
-    fi
 
 
 		## Configuration 
 		if [ ${gcMode} = "G1" ]
 		then
-	    
-      # Disable C1 
-      #JITOption1="-XX:-TieredCompilation"
+	     confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M  -XX:PrefetchThreads=${TPThreadNum} -XX:PrefetchNum=${ElemPrefetchNum} -XX:PrefetchSize=1000000  -XX:PrefetchQueueThreshold=64 -XX:G1PrefetchBufferSize=1024  -XX:+PrintGCDetails -Xlog:prefetch=${logLevel}"	
       
-     # Print methods compiled by C1 and C2
-      #JITOption2="-XX:+CITraceTypeFlow"
-	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M  -XX:+TPThreadEnable -XX:PrefetchThreads=${TPThreadNum} -XX:PrefetchNum=${ElemPrefetchNum} -XX:PrefetchSize=1000000  -XX:PrefetchQueueThreshold=64 -XX:G1PrefetchBufferSize=1024  -XX:+PrintGCDetails -Xlog:tpthread=${logLevel}"
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -94,16 +85,16 @@ do
 
   else
 	#set a useless parameter for --conf
-	confVar="spark.app.name=SparkPageRank"
+	confVar="spark.app.name=ConnectedComponentsExample"
   fi
 
 
 
 
   #log
-  echo ""                 >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo ""        >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
   echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo ""                 >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo ""        >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
@@ -114,8 +105,8 @@ do
 
 
   # run the application
-	echo "spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet} ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet} ${AppIterations} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+	echo "spark-submit --class ConnectedComponentsExample   --conf "${confVar}"  ${HOME}/jars/cc.jar ~/data/${InputDataSet} ${AppIterations}"
+  (time -p  spark-submit --class ConnectedComponentsExample   --conf "${confVar}"  ${HOME}/jars/cc.jar ~/data/${InputDataSet} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
 
   count=`expr $count + 1 `
 done
