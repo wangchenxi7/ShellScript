@@ -14,9 +14,9 @@ tag="baseline-spark-SkewedGroupBy-25-mem"
 
 ### Applications control
 numMappers="12"
-numKVPairs="393216"
+numKVPairs="256216"
 valSize="8192"
-numReducers="12"
+numReducers="16"
 logLevel="info"
 
 #################
