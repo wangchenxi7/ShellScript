@@ -19,6 +19,6 @@ output="/hadoop_output"
 #fi
 
 
-echo " hadoop jar ${HADOOP_HOME}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar ${app_name} ${input} ${output} "
-hadoop jar ${HADOOP_HOME}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar ${app_name} ${input} ${output}
+echo " yarn jar ${HADOOP_HOME}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar ${app_name} ${input} ${output} "
+yarn jar ${HADOOP_HOME}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar ${app_name} ${input} ${output}
 

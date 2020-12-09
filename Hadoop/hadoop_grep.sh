@@ -5,7 +5,7 @@ then
 	HOME="/mnt/ssd/wcx"
 fi
 
-app_name="wordcount"
+app_name="grep"
 
 #on hdfs 
 input="/out.wikipedia_link_en"
