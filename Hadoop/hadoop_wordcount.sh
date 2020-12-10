@@ -8,7 +8,8 @@ fi
 app_name="wordcount"
 
 #on hdfs 
-input="/out.wikipedia_link_en"
+#input="/out.wikipedia_link_en"
+input="/wiki_split"
 output="/hadoop_output"
 
 
