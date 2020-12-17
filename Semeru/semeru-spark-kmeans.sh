@@ -12,18 +12,18 @@ CPUMemPercentage=$1
 if [ -z "${CPUMemPercentage}" ]
 then
   echo "Please input Local memory percentage [10, 100]: e.g. 25, 50 etc."
-  read CPUMemPercentage
+  #read CPUMemPercentage
 fi
 
 
 ### Shell Scrip Control
 running_times=1
-tag="semeru-spark-lr-${CPUMemPercentage}-mem"
+tag="semeru-spark-kmeans-${CPUMemPercentage}-mem"
 
 ### Applications control
 AppIterations="10"
 #InputDataSet="out.2g"
-InputDataSet="out.wikipedia_link_en.2.9g"
+InputDataSet="out.wikipedia_link_fr.1.1g"
 logLevel="info"
 
 #################
@@ -39,7 +39,7 @@ gcMode="Semeru"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 regionSize="512M"
 tlabSize="4096"
-#ParallelGCThread="32"	# CPU server GC threads 
+ParallelGCThread="32"	# CPU server GC threads 
 # Concurrent Thread is decided on Memory server
 
 
@@ -83,7 +83,9 @@ do
 		then
 			## Semeru, CPU server GC
 		
-			confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3 -Xnoclassgc  -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:SemeruLocalCachePercent=${CPUMemPercentage} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
+			#confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3 -Xnoclassgc  -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:SemeruLocalCachePercent=${CPUMemPercentage} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
+			#confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3 -Xnoclassgc  -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
+			confVar="spark.executor.extraJavaOptions= -XX:MaxNewSize=1g  -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3 -Xnoclassgc  -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -112,8 +114,8 @@ do
 
 
   # run the application
-	echo "spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet} ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet} ${AppIterations} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+	echo "spark-submit --class JavaKMeansExample   --conf "${confVar}"  ${HOME}/jars/kmeans-1.1.jar ~/data/${InputDataSet} 4  ${AppIterations}"
+  (time -p  spark-submit --class JavaKMeansExample  --conf "${confVar}"  ${HOME}/jars/kmeans-1.1.jar ~/data/${InputDataSet} 4 ${AppIterations} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
 
   count=`expr $count + 1 `
 done

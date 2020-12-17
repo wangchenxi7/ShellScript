@@ -30,10 +30,10 @@ confVar="on"
 #youngRatio="8"	
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
-ParallelGCThread="16"	# CPU server GC threads 
-ConcGCThread="2"
+ParallelGCThread="32"	# CPU server GC threads 
+ConcGCThread="1"
 TPThreadNum="2"
-ElemPrefetchNum="2048"
+ElemPrefetchNum="8192"
 
 #############################
 # Start run the application
@@ -85,7 +85,7 @@ do
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M  -XX:+TPThreadEnable -XX:PrefetchThreads=${TPThreadNum} -XX:PrefetchNum=${ElemPrefetchNum} -XX:PrefetchSize=1000000  -XX:PrefetchQueueThreshold=64 -XX:G1PrefetchBufferSize=1024  -XX:+PrintGCDetails -Xlog:tpthread=${logLevel}"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=4g   -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M  -XX:+TPThreadEnable -XX:PrefetchThreads=${TPThreadNum} -XX:PrefetchNum=${ElemPrefetchNum} -XX:PrefetchSize=1000000  -XX:PrefetchQueueThreshold=64 -XX:G1PrefetchBufferSize=1024  -XX:+PrintGCDetails -Xlog:tpthread=${logLevel}"
 
 		else
 			echo "!! GC Mode ERROR  !!"
