@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# update the repos first
+apt update
 
 ##
 # Install necessary library
@@ -14,7 +16,7 @@ apt install -y numactl
 ##
 # Kernel development
 apt install -y libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf
-
+apt install -y make 
 
 
 ## CGroup

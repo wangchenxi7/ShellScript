@@ -28,7 +28,7 @@ logLevel="info"
 
 confVar="on"
 #youngRatio="7"	
-youngGenSize="4g"
+youngGenSize="2g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 #ParallelGCThread="32"	# CPU server GC threads 
