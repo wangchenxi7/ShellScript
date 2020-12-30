@@ -45,3 +45,8 @@ apt install -y vim
 apt install -y screen
 
 
+##
+# Programming Languages
+
+# Python
+apt install -y python python3 python3-distutils 
