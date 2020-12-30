@@ -12,6 +12,7 @@ apt update
 
 # numa control
 apt install -y numactl 
+apt install -y network-manager
 
 ##
 # Kernel development
