@@ -19,9 +19,11 @@ apt install -y network-manager
 apt install -y libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf
 apt install -y make gcc g++
 
+#if there is any version conflicts, change to use aptitude install the packages manually
+apt install -y aptitude
 
 ## CGroup
-
+apt -y install cgroup-tools
 
 ## Install RDMA
 apt -y install nvme-cli
