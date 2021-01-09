@@ -18,6 +18,8 @@ apt install -y network-manager
 # Kernel development
 apt install -y libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf
 apt install -y make gcc g++
+# development tools, e.g., perf
+apt-get install -y linux-tools-common linux-tools-generic linux-tools-`uname -r`
 
 #if there is any version conflicts, change to use aptitude install the packages manually
 apt install -y aptitude
