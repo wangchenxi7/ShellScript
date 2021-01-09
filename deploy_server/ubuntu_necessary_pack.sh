@@ -19,7 +19,12 @@ apt install -y network-manager
 apt install -y libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf
 apt install -y make gcc g++
 # development tools, e.g., perf
-apt-get install -y linux-tools-common linux-tools-generic linux-tools-`uname -r`
+apt-get install -y linux-tools-common linux-tools-generic
+apt install -y  binutils-dev libbinutils
+
+## dependencies to build kernel/tools/perf
+apt install -y libdw-dev systemtap-sdt-dev libunwind-dev  libperl-dev python-dev libcap-dev libnuma-dev libzstd-dev  libbabeltrace-dev libslang2-dev libgtk2.0-dev libevent-dev
+
 
 #if there is any version conflicts, change to use aptitude install the packages manually
 apt install -y aptitude
