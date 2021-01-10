@@ -2,7 +2,7 @@
 
 
 # The swap file/partition size should be equal to the whole size of remote memory
-SWAP_PARTITION_SIZE="16G"
+SWAP_PARTITION_SIZE="32G"
 
 # Cause of sudo, NOT use ${HOME}
 home_dir="/home/wcx/Programs"

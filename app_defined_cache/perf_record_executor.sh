@@ -1,11 +1,11 @@
 #! /bin/bash
 
 
-# Run with root or sudo
+# Do NOT run with root or sudo
 # Record and dump the perf.data
 
 # Environments
-home_dir="/mnt/wcx"
+home_dir="/mnt/ssd/wcx"
 perf_command=${home_dir}/linux/tools/perf/perf
 output_file="${home_dir}/Logs/perf.data"
 
@@ -18,6 +18,12 @@ do
 done
 echo "perf executor: $executorId"
 
+#if [ -z "${executorId}" ] 
+#then
+#  echo "There is no CoarseGrainedExectuorBackend. Exit.."
+#  exit 1
+#fi
+
 
 # Do the action
-${perf_command} record -a --call-graph fp -p ${executorId} -o ${output_file}
+sudo ${perf_command} record -a --call-graph fp -p ${executorId} -o ${output_file}
