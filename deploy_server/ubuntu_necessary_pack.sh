@@ -25,6 +25,9 @@ apt install -y  binutils-dev libbinutils
 ## dependencies to build kernel/tools/perf
 apt install -y libdw-dev systemtap-sdt-dev libunwind-dev  libperl-dev python-dev libcap-dev libnuma-dev libzstd-dev  libbabeltrace-dev libslang2-dev libgtk2.0-dev libevent-dev
 
+## to build OpenJDK
+apt install -y zip unzip libx11-dev libxext-dev libxrender-dev libxrandr-dev libxtst-dev libxt-dev  libcups2-dev  libasound2-dev
+
 
 #if there is any version conflicts, change to use aptitude install the packages manually
 apt install -y aptitude
