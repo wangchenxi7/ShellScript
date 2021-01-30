@@ -17,7 +17,7 @@ apt install -y network-manager
 ##
 # Kernel development
 apt install -y libncurses-dev flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf
-apt install -y make gcc g++
+apt install -y make gcc g++ gdb
 # development tools, e.g., perf
 apt-get install -y linux-tools-common linux-tools-generic
 apt install -y  binutils-dev libbinutils

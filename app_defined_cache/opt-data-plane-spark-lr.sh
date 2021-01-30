@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-100-mem"
+tag="opt-data-plane-spark-lr-25-mem"
 
 ### Applications control
 AppIterations="10"
@@ -83,7 +83,7 @@ do
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails -Xlog:semeru=${logLevel}"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:+SemeruEnableMemPool -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails -Xlog:semeru=${logLevel}"
 
 		else
 			echo "!! GC Mode ERROR  !!"
