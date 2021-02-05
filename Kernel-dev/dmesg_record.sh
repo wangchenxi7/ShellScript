@@ -29,7 +29,7 @@ fi
 if [ "${action}" = "record"  ]
 then
 	#1 store dmesg	
-	dmesg > ${log_dir}/dmesg.log &
+	dmesg -Hw > ${log_dir}/dmesg.log &
 
 	#2 print log to screen
   tail -n 1000 -f ${log_dir}/dmesg.log	
