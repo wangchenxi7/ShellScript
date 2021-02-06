@@ -17,5 +17,12 @@ do
   sleep 1
 done
 
-echo ${executorId} >>  /sys/fs/cgroup/memory/${target_cgroup}/cgroup.procs
-echo "echo ${executorId} >>  /sys/fs/cgroup/memory/${target_cgroup}/cgroup.procs"
+## NOT this comamnd to avoid add its children process into the cgroup
+#echo ${executorId} >>  /sys/fs/cgroup/memory/${target_cgroup}/cgroup.procs
+#echo "echo ${executorId} >>  /sys/fs/cgroup/memory/${target_cgroup}/cgroup.procs"
+
+
+# if add -sticky, the children processes will fall into the same cgroup.
+# If without -sticky, the children processes stay in the default cgroup, e.g., root.
+echo "cgclassify -g memory:${target_cgroup} ${executorId}"
+cgclassify -g memory:${target_cgroup} ${executorId}
