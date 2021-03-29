@@ -17,14 +17,14 @@ heap_size="768M"
 num_conc_refine="2"
 log_level="info"
 
-jvm_basic_opts="-Xmx${heap_size} -Xms${heap_size} ${gc_type} -Xlog:semeru=${log_level},gc=${log_level},semeru+heap=${log_level},semeru+prefetch_chunk=debug"
-#jvm_basic_opts="-Xmx${heap_size} -Xms${heap_size} ${gc_type} -Xlog:semeru=${log_level},gc=${log_level},semeru+heap=${log_level},semeru+prefetch_chunk=${log_level}"
+#jvm_basic_opts="-Xmx${heap_size} -Xms${heap_size} ${gc_type} -Xlog:semeru=${log_level},gc=${log_level},semeru+heap=${log_level},semeru+prefetch_chunk=debug"
+jvm_basic_opts="-Xmx${heap_size} -Xms${heap_size} ${gc_type} -Xlog:semeru=${log_level},gc=${log_level},semeru+heap=${log_level},semeru+prefetch_chunk=${log_level}"
 
 ###
 # App Defiend Cache options
 
 
-jvm_adc_opts=" -XX:-UseCompressedOops -XX:+SemeruEnablePrefetchChunkAffinity -XX:G1ConcRefinementThreads=${num_conc_refine}"
+jvm_adc_opts=" -XX:-UseCompressedOops -XX:+SemeruEnablePrefetchChunkAffinity -XX:G1ConcRefinementThreads=${num_conc_refine} -XX:+PrintGCDetails"
 
 ###
 # Execute the command
