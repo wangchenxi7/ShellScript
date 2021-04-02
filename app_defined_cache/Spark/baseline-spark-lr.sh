@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-100-mem"
+tag="baseline-spark-lr-25-mem"
 
 ### Applications control
 AppIterations="10"
