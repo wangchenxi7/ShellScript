@@ -12,8 +12,8 @@ workload_to_run="h2"
 
 ###
 # Basic Java options
-#gc_type="-XX:+UseG1GC"
-gc_type="-XX:+UnlockExperimentalVMOptions   -XX:+UseShenandoahGC"
+gc_type="-XX:+UseG1GC"
+#gc_type="-XX:+UnlockExperimentalVMOptions   -XX:+UseShenandoahGC"
 heap_size="768M"
 log_level="info"
 
