@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-25-10G-executorToCgroup-mem"
+tag="baseling-spark-lr-25-10G-executorToCgroup-profiling"
 
 ### Applications control
 AppIterations="10"
@@ -31,13 +31,18 @@ maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="16"	# CPU server GC threads 
-ConcGCThread=4
+ConcGCThread=8
+
+#SemeruJavaOption="-XX:+SemeruEnableMemPool  -XX:+SemeruEnableUFFD -XX:+SemeruEnablePrefetchChunkAffinity "
+SemeruJavaOption="-XX:+SemeruEnableMemPool  -XX:+SemeruEnableUFFD"
 
 #############################
 # Start run the application
 #############################
 
 echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-dram-old-nvm)"
+
+
 
 
   #### run the fisrt application
@@ -78,7 +83,7 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio} ${SemeruJavaOption} -XX:+PrintGCDetails -Xlog:semeru=${logLevel},semeru+heap=${logLevel},semeru+prefetch_chunk=${logLevel}"
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -96,7 +101,6 @@ count=1
 
 while [ $count -le $running_times ]
 do
-
 
   #log
   echo ""                 >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1

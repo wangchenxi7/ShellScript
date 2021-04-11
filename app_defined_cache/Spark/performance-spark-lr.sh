@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="performance-spark-lr-25-mem-page-affinity"
+tag="performance-spark-lr-25-10G-executorToCgroup-page-affinity"
 
 ### Applications control
 AppIterations="10"
