@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-25-9G-mem"
+tag="Kernel-default-spark-lr-25-9G-mem"
 
 ### Applications control
 AppIterations="10"
@@ -25,11 +25,10 @@ logLevel="info"
 #### Semeru ####
 
 confVar="on"
-#youngRatio="7"	
-youngGenSize="4000M"
+youngGenSize="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
-#ParallelGCThread="32"	# CPU server GC threads 
+ParallelGCThread="16"	# CPU server GC threads 
 ConcGCThread=4
 
 #############################
@@ -82,7 +81,7 @@ do
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M   -XX:+PrintGCDetails "
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails "
 
 		else
 			echo "!! GC Mode ERROR  !!"
