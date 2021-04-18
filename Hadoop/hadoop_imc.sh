@@ -8,7 +8,7 @@ fi
 app_name="edu.uci.pls.hadoop.apps.inmapper.InMapperCombiner"
 
 #on hdfs 
-input1="/wiki"
+input1="/wiki_split"
 output="/hadoop_output"
 
 
