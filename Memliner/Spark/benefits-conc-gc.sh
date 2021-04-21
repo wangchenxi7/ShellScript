@@ -9,8 +9,9 @@
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
-running_times=4
-tag="benefits-conc-gc-spark-lr-25-9G-WorkerToCgroup-mem"
+running_times=1
+#tag="benefits-conc-gc-spark-lr-25-9G-WorkerToCgroup-mem"
+tag="prefetching-effectiveness-conc-gc-spark-lr-25-9G-ExecutorToCgroup-mem"
 
 ### Applications control
 AppIterations="10"
@@ -84,7 +85,8 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${YoungGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} -XX:+PrintGCDetails"
+			#confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${YoungGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} -XX:+PrintGCDetails"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${YoungGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread} -Xlog:semeru+stats=debug  -Xms${heapSize} -XX:+PrintGCDetails"
 
 		else
 			echo "!! GC Mode ERROR  !!"

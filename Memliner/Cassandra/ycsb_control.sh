@@ -10,7 +10,7 @@ host_ip="131.179.96.201"
 # YCSB controls
 ####
 
-num_threads=16
+num_threads=32
 
 # How many operations to do
 records=10000000
@@ -18,7 +18,10 @@ records=10000000
 # The behavior, read/update/delete/insert
 # The workloads are defiend under ycsb/workload/
 #workload="workloada"
-workload="workloadMemLinerUpdateIntensive"
+#workload="workloadMemLinerUpdateIntensive"
+workload="workloadMemLinerUpdateInsert"
+
+
 
 if [ -z "${YCSB_HOME}" ]
 then
@@ -36,7 +39,12 @@ then
   read op
 fi
 
+# Rcord and print log
+log_file="${HOME}/Logs/${op}.records-${records}.threads-${num_threads}.workload-${workload}.log"
+
 echo "Do action : ${op}"
+
+
 
 if [ "${op}" = "load" ]
 then
@@ -47,7 +55,9 @@ elif [ "${op}" = "run" ]
 then
 
   echo "${ycsb_home}/bin/ycsb.sh  ${op} cassandra-cql -p hosts=${host_ip} -p operationcount=${records} -threads ${num_threads} -s -P ${ycsb_home}/workloads/${workload}"
-  ${ycsb_home}/bin/ycsb.sh  ${op} cassandra-cql -p hosts=${host_ip} -p operationcount=${records} -threads ${num_threads} -s -P ${ycsb_home}/workloads/${workload}
+  # ${ycsb_home}/bin/ycsb.sh  ${op} cassandra-cql -p hosts=${host_ip} -p operationcount=${records} -threads ${num_threads} -s -P ${ycsb_home}/workloads/${workload} >> ~/Logs/${op}.records-${records}.threads-${num_threads}.workload-${workload}.log  2>&1
+  (${ycsb_home}/bin/ycsb.sh  ${op} cassandra-cql -p hosts=${host_ip} -p operationcount=${records} -threads ${num_threads} -s -P ${ycsb_home}/workloads/${workload} >> ${log_file} 2>&1) &
+  tail -f ${log_file}
 
 else
   echo "!! Wrong operation ${op} !!"

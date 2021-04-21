@@ -9,8 +9,9 @@
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
-running_times=3
-tag="disable-conc-gc-spark-lr-25-9G-WorkerToCgroup-mem"
+running_times=1
+#tag="disable-conc-gc-spark-lr-25-9G-WorkerToCgroup-mem"
+tag="disable-conc-gc-spark-lr-25-9G-ExecutorToCgroup-mem"
 
 ### Applications control
 AppIterations="10"
@@ -27,7 +28,7 @@ logLevel="info"
 confVar="on"
 #youngRatio="7"	
 #youngGenSize="4000M"
-#maxYoungGen="4g"
+maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="16"	# CPU server GC threads 
@@ -84,7 +85,8 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${YoungGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} -XX:+PrintGCDetails"
+			#confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${YoungGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} -XX:+PrintGCDetails"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${YoungGenSize}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} -Xlog:semeru+stats=debug  -XX:+PrintGCDetails"
 
 		else
 			echo "!! GC Mode ERROR  !!"
