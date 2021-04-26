@@ -5,8 +5,9 @@
 # Record and dump the perf.data
 
 # Environments
-home_dir="/mnt/ssd/wcx"
-perf_command=${home_dir}/linux-5.4/tools/perf/perf
+home_dir="/mnt/ssd/nvme"
+#perf_command=${home_dir}/linux-5.4/tools/perf/perf
+perf_command=/usr/bin/perf
 output_file="${home_dir}/Logs/perf.data"
 
 

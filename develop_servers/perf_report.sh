@@ -3,8 +3,9 @@
 # Analyze the perf.data got by perf record
 # Do NOT run with root or sudo
 
-home_dir="/mnt/ssd/wcx"
-perf_command=${home_dir}/linux-5.4/tools/perf/perf
+home_dir="/mnt/ssd/nvme"
+#perf_command=${home_dir}/linux-5.4/tools/perf/perf
+perf_command=/usr/bin/perf
 target_perf_data="${home_dir}/Logs/perf.data"
 
 

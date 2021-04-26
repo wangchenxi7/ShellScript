@@ -3,14 +3,17 @@
 #on/off : control the spark.executor.extraJavaOptions
 #on : "on"
 
-### object array recognition limit
-# all the applications set the same value to avoid the JIT performance overhead
+##
+# Spark executor
+user="nvme"
+worker_ip="zion-9.cs.ucla.edu"
 
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
 running_times=1
-tag="Leap-spark-lr-25-9G-mem"
+tag="Leap-spark-lr-25-9G-mem-profiling"
+#tag="Leap-spark-lr-25-9G-mem-profiling-with-swap-cache-limit"
 #tag="Kernel-default-spark-lr-25-9G-mem"
 
 ### Applications control
@@ -18,9 +21,14 @@ AppIterations="10"
 InputDataSet="out.wikipedia_link_en.2.9g"
 logLevel="info"
 
-#################
-## First run
-#############
+
+####
+#  Enable syscal/perf counter
+####
+enable_swap_counter=1
+swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
+swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
+
 
 
 #### Semeru ####
@@ -31,6 +39,26 @@ gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="16"	# CPU server GC threads 
 ConcGCThread=4
+
+
+
+#################
+# Functions
+#################
+
+function reset_sys_counter () {
+  echo " reset swap counter."
+  ssh -t ${user}@${worker_ip}   ${swap_counter_reset_exe}
+}
+
+function read_swap_counter () {
+  echo "read swap counter"
+  ssh -t ${user}@${worker_ip}   ${swap_counter_read_exe}
+}
+
+
+
+
 
 #############################
 # Start run the application
@@ -117,8 +145,27 @@ do
 
 
   # run the application
-	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> ${log_file} 2>&1
+
+	  echo "Execution ID ${count} - spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}"
+      
+    # reset sys counter
+    if [ "${enable_swap_counter}" = "1" ]
+    then
+      reset_sys_counter >> ${log_file} 2>&1
+    fi
+
+    # Run a batch
+    (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}) >> ${log_file} 2>&1
+
+    # read sys counter
+    if [ "${enable_swap_counter}" = "1" ]
+    then
+      read_swap_counter >> ${log_file} 2>&1
+    fi
+
+    echo "End of Execution ID ${count}" >> ${log_file} 2>&1
+    echo "" >> ${log_file} 2>&1
+
 
   count=`expr $count + 1 `
 done

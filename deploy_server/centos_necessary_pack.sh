@@ -44,10 +44,10 @@ yum install -y libcgroup libcgroup-tools
 
 
 ## Install RDMA
-yum install -y libibverbs.x86_64  rdma-core-devel rdma-core.x86_64 librdmacm.x86_64
-yum -y groupinstall "Infiniband Support"
+#yum install -y libibverbs.x86_64  rdma-core-devel rdma-core.x86_64 librdmacm.x86_64
+#yum -y groupinstall "Infiniband Support"
 
-yum -y install nvme-cli
+#yum -y install nvme-cli
 
 
 ##
