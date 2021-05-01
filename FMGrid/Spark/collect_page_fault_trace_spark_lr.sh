@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-25-9G-mem"
+tag="collect-page-fault-trace-spark-lr-25-mem"
 
 ### Applications control
 AppIterations="10"
@@ -26,14 +26,19 @@ logLevel="info"
 
 confVar="on"
 #youngRatio="7"	
-youngGenSize="4000M"
+#youngGenSize="4000M"
+maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
-ParallelGCThread="16"
-ConcGCThread=4
+ParallelGCThread="2"	# CPU server GC threads 
+ConcGCThread=2
+
+FMGridJVMOption="-XX:+SemeruEnableMemPool  -XX:+SemeruEnableUFFD"
+
+# Build JVM options
 
 
-# Build the JVM options
+  #### run the fisrt application
   if [ -n "${confVar}" ]
   then
 	
@@ -71,7 +76,7 @@ ConcGCThread=4
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M   -XX:+PrintGCDetails "
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} ${FMGridJVMOption} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails -Xlog:semeru=${logLevel},semeru+uffd=debug,os+thread=info"
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -83,10 +88,9 @@ ConcGCThread=4
 	confVar="spark.app.name=SparkPageRank"
   fi
 
-
 ##
-# Log file
-log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${gcMode}.${ParallelGCThread}.${ConcGCThread}"
+# Logs
+log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.${ConcGCThread}.log"
 
 
 #############################
@@ -94,29 +98,25 @@ log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIteratio
 #############################
 
 echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-dram-old-nvm)"
-
-
-#### run the fisrt application
 count=1
 
 while [ $count -le $running_times ]
 do
 
-  echo ""                 >> "${log_file}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${log_file}.log" 2>&1
-  echo ""                 >> "${log_file}.log" 2>&1
+  echo ""                 >> "${log_file}" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${log_file}" 2>&1
+  echo ""                 >> "${log_file}" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${log_file}.log" 2>&1
-  echo "" >> "${log_file}.log" 2>&1
-  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}.log" 2>&1
-
+  echo "" >> "${log_file}" 2>&1
+  echo "" >> "${log_file}" 2>&1
+  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}" 2>&1
 
 
   # run the application
 	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> "${log_file}.log" 2>&1
+  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
 
   count=`expr $count + 1 `
 done
