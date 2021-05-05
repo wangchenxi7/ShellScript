@@ -16,7 +16,7 @@ gc_type="-XX:+UseG1GC"
 heap_size="2g"
 log_level="info"
 
-jvm_basic_opts="-Xmx${heap_size} -Xms${heap_size} ${gc_type} -Xlog:semeru=${log_level},semeru+uffd=${log_level},gc=${log_level}"
+jvm_basic_opts="-Xmx${heap_size} -Xms${heap_size} ${gc_type} -Xlog:semeru=${log_level},semeru+uffd=${log_level},gc=${log_level},os+thread=${log_level},vmthread=${log_level},vmoperation=${log_level}"
 
 ###
 # App Defiend Cache options

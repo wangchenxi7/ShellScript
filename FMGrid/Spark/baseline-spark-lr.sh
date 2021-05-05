@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-25-10G-executorToCgroup-mem"
+tag="disable-slot-cache-baseline-spark-lr-25-10G-executorToCgroup-mem"
 
 ### Applications control
 AppIterations="10"
@@ -113,7 +113,7 @@ do
 
   # run the application
 	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
+  (time -p  spark-submit --class SparkLR  --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
 
   count=`expr $count + 1 `
 done
