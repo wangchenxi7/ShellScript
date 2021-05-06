@@ -22,8 +22,8 @@ host_ip="zion-1.cs.ucla.edu"
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
-running_times=3
-tag="baseline-spark-tc-25-mem-10g-vma"
+running_times=5
+tag="disable-slot-cache-baseline-spark-tc-25-mem-10g-vma"
 
 ### Applications control
 AppIterations="3"
