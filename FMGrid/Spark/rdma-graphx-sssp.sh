@@ -22,7 +22,7 @@ running_times=2
 tag="rdma-graphx-sssp-25-mem-5g"
 
 ### Applications control
-VertexNum=""1048576
+VertexNum="1048576"
 StartVertex="1024"
 logLevel="info"
 
