@@ -11,7 +11,7 @@
 ####
 #  Enable syscal/perf counter
 ####
-enable_swap_counter=1
+enable_swap_counter=5
 swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
 swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
 

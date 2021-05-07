@@ -8,21 +8,13 @@
 
 ### Parameters wait for inputing
 
-user="wcx"
-host_ip="zion-1.cs.ucla.edu"
-
-enable_swap_counter=1
-swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
-swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
-
-
 ### Shell Scrip Control
 running_times=5
-tag="disable-slot-cache-reuse-baseline-spark-kmeans-25-10G-WokrerToCgroup-mem"
+tag="baseline-spark-graphx-sssp-25-mem-10g"
 
 ### Applications control
-AppIterations="10"
-InputDataSet="out.1.6g"
+VertexNum="2097152"
+StartVertex="1024"
 logLevel="info"
 
 #################
@@ -34,16 +26,17 @@ logLevel="info"
 
 confVar="on"
 #youngRatio="7"	
-#youngGenSize="4000M"
-maxYoungGen="4g"
+youngGenSize="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="16"	# CPU server GC threads 
-ConcGCThread=4
+ConcGCThread="4"
 
 #############################
 # Start run the application
 #############################
+
+echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-dram-old-nvm)"
 
 
 
@@ -85,7 +78,7 @@ ConcGCThread=4
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails "
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -94,40 +87,21 @@ ConcGCThread=4
 
   else
 	#set a useless parameter for --conf
-	confVar="spark.app.name=SparkPageRank"
+	confVar="spark.app.name=graphx.SSSPExample"
   fi
 
 
+
 ##
-# log file
-log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.$ConcGCThread}.log"
+# Logs
+log_file="${HOME}/Logs/${tag}.VertexNum${VertexNum}.StartVertex${StartVetex}.heapSize${heapSize}.MaxNewSize${youngGenSize}.${gcMode}.${ParallelGCThread}.${ConcGCThread}.log"
 
 
-###
-# Functions
-
-
-
-function reset_sys_counter () {
-  echo " reset swap counter."
-  ssh -t ${user}@${host_ip}   ${swap_counter_reset_exe}
-}
-
-function read_swap_counter () {
-  echo "read swap counter"
-  ssh -t ${user}@${host_ip}   ${swap_counter_read_exe}
-}
-
-
-
-### 
-# Do the action
 
 count=1
 
 while [ $count -le $running_times ]
 do
-
 
   #log
   echo ""                 >> "${log_file}" 2>&1
@@ -140,22 +114,11 @@ do
   echo "" >> "${log_file}" 2>&1
   echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}" 2>&1
 
-  # reset sys counter
-  if [ "${enable_swap_counter}" = "1" ]
-  then
-    reset_sys_counter >> ${log_file} 2>&1
-  fi
+
 
   # run the application
-	echo "spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${HOME}/adc/benchmark/spark/jar/skm/kmeans-1.1.jar ~/data/${InputDataSet} 4 ${AppIterations}"
-  (time -p  spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${HOME}/adc/benchmark/spark/jar/skm/kmeans-1.1.jar ~/data/${InputDataSet} 4 ${AppIterations} ) >> "${log_file}" 2>&1
-
-
-  # read sys counter
-  if [ "${enable_swap_counter}" = "1" ]
-  then
-    read_swap_counter >> ${log_file} 2>&1
-  fi
+	echo "spark-submit --class org.apache.spark.examples.graphx.SSSPExample   --conf "${confVar}"  ${HOME}/jars/sparkapp_2.12-1.0.jar  ${VertexNum} ${StartVertex} "
+  (time -p  spark-submit --class org.apache.spark.examples.graphx.SSSPExample   --conf "${confVar}"  ${HOME}/jars/sparkapp_2.12-1.0.jar ${VertexNum} ${StartVertex} ) >> "${log_file}" 2>&1
 
   count=`expr $count + 1 `
 done
