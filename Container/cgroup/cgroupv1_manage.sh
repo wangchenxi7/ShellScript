@@ -12,8 +12,8 @@
 echo " Help message"
 echo "Parameters"
 echo "  1st, operation type: create, delete"
-echo "  2nd, size for cgroup limitation. Default 10g"
-echo "  3rd, the name of the cgroup. Default memctl"
+echo "  2nd, the name of the cgroup. Default memctl"
+echo "  3rd, size for cgroup limitation. Default 10g"
 
 operation=$1
 
@@ -27,7 +27,17 @@ fi
 if [ "${operation}" = "create"  ]
 then
 
-	mem_size=$2
+  cgroup_name=$2
+  if [ -z "${cgroup_name}" ]
+  then
+    echo "Used default cgroup name, memctl"
+    cgroup_name="memctl"
+  else
+    echo "Cgroup name : ${cgroupp_name}"
+  fi
+
+
+	mem_size=$3
 
 	if [ -z "${mem_size}"  ]
 	then
@@ -37,14 +47,6 @@ then
 		echo "Memory size limitations: ${mem_size}"
 	fi
 
-  cgroup_name=$3
-  if [ -z "${cgroup_name}" ]
-  then
-    echo "Used default cgroup name, memctl"
-    cgroup_name="memctl"
-  else
-    echo "Cgroup name : ${cgroupp_name}"
-  fi
 
 	user=`whoami`
 
@@ -59,6 +61,16 @@ then
 
 elif [	${operation} = "delete"	]
 then 
+  
+  cgroup_name=$2
+  if [ -z "${cgroup_name}" ]
+  then
+    echo "Used default cgroup name, memctl"
+    cgroup_name="memctl"
+  else
+    echo "Cgroup name : ${cgroupp_name}"
+  fi
+
 	echo " sudo cgdelete memory:/${cgroup_name}"
 	sudo cgdelete memory:/${cgroup_name}
 
