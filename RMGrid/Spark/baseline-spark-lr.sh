@@ -9,7 +9,7 @@
 ####
 #  Enable syscal/perf counter
 ####
-enable_swap_counter=1
+#enable_swap_counter=1
 swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
 swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
 
@@ -19,7 +19,7 @@ host_ip="zion-1.cs.ucla.edu"
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
-running_times=3
+running_times=1
 tag="disable-slot-cache-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
 
 ### Applications control
@@ -150,8 +150,8 @@ do
 
 
   # run the application
-	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR  --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
+	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/dataset/${InputDataSet}  ${AppIterations}"
+  (time -p  spark-submit --class SparkLR  --conf "${confVar}"  ${HOME}/jars/lr.jar ~/dataset/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
 
   # read sys counter
   if [ "${enable_swap_counter}" = "1" ]
