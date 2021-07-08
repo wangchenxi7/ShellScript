@@ -86,6 +86,26 @@ function create_swap_file () {
 }
 
 
+# Close the swapfiles mounted by the function, create_swap_file
+function close_swap_file () {
+        swap_file_id=$1
+        swap_file="${swap_file_base}-${swap_file_id}" 
+
+        # For ubuntu, usually a file is used as swap space
+        swap_bd=$(swapon -s | grep "${swap_file}" | cut -d " " -f 1 )
+
+        if [ -z "${swap_bd}" ]
+        then
+                echo "Nothing to close."
+        else
+                echo "Swap Partition to close :${swap_bd} "
+                sudo swapoff "${swap_bd}"
+        fi
+
+        #check
+        echo "Current swap partition:"
+        swapon -s
+}
 
 
 
@@ -98,7 +118,8 @@ then
 
 elif [ "${action}" = "unmount" ]
 then
-        echo "!! NOT implement yet. !!"
+        close_swap_file 1
+        close_swap_file 2 
 
 else
         echo "!!  Wrong action : ${action} !!"
