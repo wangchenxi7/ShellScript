@@ -15,7 +15,8 @@ swap_file_base="${home_dir}/swapfile"
 
 
 
-
+# The default size
+# Can be overrided by passing a second parameter to the function create_swap_file
 SWAP_PARTITION_SIZE_GB="48"
 
 # For the isolated swap partition, set priority 999 to them.
@@ -51,27 +52,33 @@ function create_swap_file () {
         swap_file_id=$1
         swap_file="${swap_file_base}-${swap_file_id}"
 
+        swap_file_size=$2
+        if [ -z "${swap_file_size}" ]
+        then
+          swap_file_size=${SWAP_PARTITION_SIZE_GB}
+        fi
+        echo "Swap partition size : ${swap_file_size} GB"
+
         if [ -e ${swap_file} ]
         then
-                echo "Please confirm the size of swapfile match the expected ${SWAP_PARTITION_SIZE_GB}G"
+                echo "Please confirm the size of swapfile match the expected ${swap_file_size}G"
                 cur_size=$(du -sh ${swap_file} | awk '{print $1;}' | tr -cd '[[:digit:]]')
-                # cur_size=$((${cur_size} - 1)) # -1 because du -sh will report 1 GB larger weirdly
-                if [[ ${cur_size} < "${SWAP_PARTITION_SIZE_GB}" ]]
+                if [[ ${cur_size} < "${swap_file_size}" ]]
                 then
-                        echo "Current ${swap_file}: ${cur_size}G NOT equal to expected ${SWAP_PARTITION_SIZE_GB}G"
+                        echo "Current ${swap_file}: ${cur_size}G is smaller than expected ${swap_file_size}G"
                         echo "Delete it"
                         sudo rm ${swap_file}
 
-                        echo "Create a file, ~/swapfile, with size ${SWAP_PARTITION_SIZE_GB}G as swap device."
-                        sudo fallocate -l ${SWAP_PARTITION_SIZE_GB}G ${swap_file}
+                        echo "Create a file, ~/swapfile, with size ${swap_file_size}G as swap device."
+                        sudo fallocate -l ${swap_file_size}G ${swap_file}
                         sudo chmod 600 ${swap_file}
                 else
-                        echo "Existing swapfile ${swap_file} , ${cur_size}GB is euqnal or larger than we want, ${SWAP_PARTITION_SIZE_GB}GB. Reuse it."
+                        echo "Existing swapfile ${swap_file} , ${cur_size}GB is euqnal or larger than we want, ${swap_file_size}GB. Reuse it."
                 fi
         else
                 # not exit, create a swapfile
-                echo "Create a file, ~/swapfile, with size ${SWAP_PARTITION_SIZE_GB}G as swap device."
-                sudo fallocate -l ${SWAP_PARTITION_SIZE_GB}G ${swap_file}
+                echo "Create a file, ~/swapfile, with size ${swap_file_size}G as swap device."
+                sudo fallocate -l ${swap_file_size}G ${swap_file}
                 sudo chmod 600 ${swap_file}
                 du -sh ${swap_file}
         fi
@@ -112,14 +119,16 @@ function close_swap_file () {
 if [ "${action}" = "mount" ]
 then
         echo "Close current swap partition && Create swap file"
-        create_swap_file 1
-        create_swap_file 2
+        create_swap_file 1 48
+        create_swap_file 2 20
+        create_swap_file 3 20
 
 
 elif [ "${action}" = "unmount" ]
 then
         close_swap_file 1
         close_swap_file 2 
+        close_swap_file 3 
 
 else
         echo "!!  Wrong action : ${action} !!"

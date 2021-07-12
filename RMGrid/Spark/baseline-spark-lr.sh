@@ -20,7 +20,8 @@ host_ip="zion-1.cs.ucla.edu"
 
 ### Shell Scrip Control
 running_times=1
-tag="disable-slot-cache-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
+#tag="disable-slot-cache-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
+tag="tmp-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
 
 ### Applications control
 AppIterations="10"
