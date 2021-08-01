@@ -43,6 +43,11 @@ apt -y install nvme-cli
 # For build OpenJDK
 
 
+##
+# For QEMU built and usage
+apt install -y ninja-build
+
+
 ## Monitor tools
 # For I/O
 apt install -y sysstat

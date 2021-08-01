@@ -5,8 +5,8 @@
 ####################
 output_console="ttyS0"
 
-wait_for_gdb="yes"  # yes or no
-#wait_for_gdb="no"
+#wait_for_gdb="yes"  # yes or no
+wait_for_gdb="no"
 
 
 ####################
@@ -74,6 +74,10 @@ then
 	echo "Use kernel version linux-4.11-rc8 "		
 	kernel_version="linux-4.11-rc8"
 
+elif [ "${kernel_version}" = "5.4" ]
+then
+	echo "Use kernel version linux-5.4 "		
+	kernel_version="linux-5.4"
 else
 	echo "Can't find this kernel version : ${kernel_version}"
 	exit 0
@@ -140,8 +144,16 @@ then
 	# Add nokaslr, console="ttyS0"
 	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}    ${disk_image}    -nographic
 
+elif [ "${kernel_version}" = "linux-5.4" ]
+then
+	#For kernel 5.4
+  echo "numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda3 console=${output_console}' "
+
+	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+
 else
 	#use a specified kernel version
+  echo "numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda3 console=${output_console}' "
 	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
 fi
 
