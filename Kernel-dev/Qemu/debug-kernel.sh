@@ -9,13 +9,31 @@ output_console="ttyS0"
 wait_for_gdb="no"
 
 
+##############
+# Server environments
+##############
+if [ -z "${HOME}" ]
+then
+	home_dir="${home_dir}"
+else
+	home_dir="${HOME}"
+fi
+echo "home dir is ${home_dir}"
+
+
+##
+# Linux distribution version
+linux_distro="ubuntu"
+
+
 ####################
 # Hardware configuration
 ###################
 
 # 1024M, 1G 
 #memory_size="256M"	# Will cause frequently swap out
-memory_size="512M"
+#memory_size="512M"
+memory_size="4G"
 #memory_size="60G"  # leave 4G for other processes
 
 ## core number
@@ -25,17 +43,27 @@ core_num=4
 #initram_dir="teeny-linux/obj/initramfs-busybox-x86.cpio.gz"
 initram_dir="no"
 
-#disk_image="/mnt/ssd/wcx/teeny-linux/debug.image"
-disk_image="/mnt/ssd/wcx/qemu-files/kernel-debug.img"
-#disk_image="no"
+##
+# choose the image version
+if [ "${linux_distro}" = "ubuntu" ]
+then
+	disk_image="${home_dir}/qemu-files/ubuntu.img"
+else
+	#disk_image="${home_dir}/teeny-linux/debug.image"
+	disk_image="${home_dir}/qemu-files/kernel-debug.img"
+	#disk_image="no"
+fi
 
 
 
-##############
-# Server environments
-##############
-home_dir="/mnt/ssd/wcx"
+##
+# NUMA options
 
+## Ignore NUMA control
+numa_cmd=""
+
+## Fix the process at one Node
+#numa_cmd="numactl --cpunodebind=0 --membind=0"
 
 
 ## Network
@@ -109,7 +137,8 @@ then
 else
 	#disk_image=" -drive format=raw,file=${disk_image} "
 	#disk_image=" -drive file=${disk_image},index=0,media=disk,format=raw "
-	disk_image=" -hda ${disk_image} -hdb /mnt/ssd/wcx/qemu-files/extra.img"
+	#disk_image=" -hda ${disk_image} -hdb ${home_dir}/qemu-files/extra.img"
+	disk_image=" -hda ${disk_image}"
 fi
 
 
@@ -135,26 +164,27 @@ fi
 
 echo "\n \n \n" 	>> ~/Logs/qemu.log
 echo "date " 			>> ~/Logs/qemu.log
-echo "qemu-system-x86_64 -s ${wait_for_gdb}   -m ${memory_size}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}   ${disk_image}    -nographic -append \"nokaslr console=${output_console}\" " >> ~/Logs/qemu.log
+echo " ${numa_cmd} qemu-system-x86_64 -s ${wait_for_gdb}   -m ${memory_size}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}   ${disk_image}    -nographic -append \"nokaslr console=${output_console}\" " >> ~/Logs/qemu.log
 
 if [ -z "${kernel_version}"  ]
 then
 	#use the default kernel version image
 	# Can only add kernel command line via grub option
 	# Add nokaslr, console="ttyS0"
-	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}    ${disk_image}    -nographic
+	${numa_cmd} qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}    ${disk_image}    -nographic
 
 elif [ "${kernel_version}" = "linux-5.4" ]
 then
 	#For kernel 5.4
-  echo "numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda3 console=${output_console}' "
+	echo "The boot partition is sda"
+	echo "${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda1 console=${output_console}' "
 
-	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda1 console=${output_console}"
 
 else
 	#use a specified kernel version
-  echo "numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda3 console=${output_console}' "
-	numactl --cpunodebind=0 --membind=0  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
+	echo " ${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda3 console=${output_console}' "
+	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda3 console=${output_console}"
 fi
 
 
