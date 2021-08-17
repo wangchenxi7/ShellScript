@@ -68,3 +68,11 @@ apt install -y screen
 
 # Python
 apt install -y python python3 python3-distutils 
+
+
+###
+# GNU build
+
+# GCC
+apt install -y libgmp3-dev
+
