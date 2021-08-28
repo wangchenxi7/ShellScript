@@ -10,7 +10,7 @@
 
 ### Shell Scrip Control
 running_times=1
-tag="baseline-spark-lr-25-9G-mem"
+tag="baseline-spark-lr-15cores-10G-mem"
 
 ### Applications control
 AppIterations="10"
@@ -115,8 +115,8 @@ do
 
 
   # run the application
-	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/data/${InputDataSet}  ${AppIterations} ) >> "${log_file}.log" 2>&1
+	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/dataset/${InputDataSet}  ${AppIterations}"
+  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ~/dataset/${InputDataSet}  ${AppIterations} ) >> "${log_file}.log" 2>&1
 
   count=`expr $count + 1 `
 done

@@ -5,7 +5,8 @@
 
 # Environments
 home_dir="/mnt/ssd/wcx"
-target_cgroup="memctl"
+#target_cgroup="memctl"
+target_cgroup="spark"
 
 #get the CoarseGrainedExecutor Id
 executorId=""
