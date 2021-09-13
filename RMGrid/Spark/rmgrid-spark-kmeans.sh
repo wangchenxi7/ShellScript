@@ -41,8 +41,8 @@ maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="24"	# CPU server GC threads 
-ConcGCThread=12
-ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=50 -XX:InitiatingHeapOccupancyPercent=80 -Xnoclassgc -XX:MetaspaceSize=0x8000000"
+ConcGCThread=1
+ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=20 -XX:InitiatingHeapOccupancyPercent=75 -Xnoclassgc -XX:MetaspaceSize=0x8000000"
 
 #############################
 # Start run the application
