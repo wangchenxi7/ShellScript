@@ -119,9 +119,10 @@ function close_swap_file () {
 if [ "${action}" = "mount" ]
 then
         echo "Close current swap partition && Create swap file"
-        create_swap_file 1 48
-        create_swap_file 2 20
-        create_swap_file 3 20
+        create_swap_file 1 16
+        create_swap_file 2 12
+        create_swap_file 3 12
+        create_swap_file 4 32
 
 
 elif [ "${action}" = "unmount" ]
@@ -129,6 +130,7 @@ then
         close_swap_file 1
         close_swap_file 2 
         close_swap_file 3 
+        close_swap_file 4
 
 else
         echo "!!  Wrong action : ${action} !!"

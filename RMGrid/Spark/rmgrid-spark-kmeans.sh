@@ -1,34 +1,25 @@
 #! /bin/bash
 
-#on/off : control the spark.executor.extraJavaOptions
-#on : "on"
-
-### object array recognition limit
-# all the applications set the same value to avoid the JIT performance overhead
-
-### perf
-
-####
-#  Enable syscal/perf counter
-####
-#enable_swap_counter=5
-swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
-swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
-
-user="wcx"
-host_ip="zion-1.cs.ucla.edu"
+### Global environments
+dataset_path="/mnt/ssd/dataset/spark/dataset"
+benchmark_jar_path="/mnt/ssd/dataset/spark/jar"
 
 
 ### Parameters wait for inputing
 
+
+#enable_swap_counter=1
+swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
+swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
+
+
 ### Shell Scrip Control
-running_times=2
-#tag="disable-slot-cache-baseline-spark-tc-25-mem-10g-vma"
-tag="enable-slot-cache-baseline-spark-tc-25-mem-8g-vma"
+running_times=1
+tag="rmgrid-spark-kmeans-25mem-10G-WokrerToCgroup"
 
 ### Applications control
-AppIterations="3"
-InputSlice="48"
+AppIterations="10"
+InputDataSet="out.1.6g"
 logLevel="info"
 
 #################
@@ -36,28 +27,34 @@ logLevel="info"
 #############
 
 
-#### JVM ####
+#### Server Profile ####
 
 ## Fusilli, 24 physical cores
 
+user="wcx"
+host_ip="fusilli.cs.ucla.edu"
+
 confVar="on"
-youngGenSize="1600M"
+#youngRatio="7"	
+#youngGenSize="4000M"
+maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="24"	# CPU server GC threads 
-ConcGCThread="6"
+ConcGCThread=12
+ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=50 -XX:InitiatingHeapOccupancyPercent=80 -Xnoclassgc -XX:MetaspaceSize=0x8000000"
 
 #############################
 # Start run the application
 #############################
 
-echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-dram-old-nvm)"
 
 
   #### run the fisrt application
   if [ -n "${confVar}" ]
   then
 	
+
 		### set Parallel GC, Concurrent GC parallelsim
 		if [ -n "${ParallelGCThread}"  ]
 		then
@@ -91,8 +88,7 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			#confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC -Xnoclassgc -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:MarkStackSize=64M -XX:MarkStackSizeMax=64M   -XX:+PrintGCDetails "
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${youngGenSize}  -XX:+UseG1GC  ${ParallelGCThread} ${ConcGCThread}  -Xms${heapSize} ${youngRatio}   -XX:+PrintGCDetails "
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread} ${ConcGCTuning} -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails"
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -106,12 +102,13 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
 
 
 ##
-# Logs
-log_file="${HOME}/Logs/${tag}.InputSlice${InputSlice}.Iteration${AppIterations}.heapSize${heapSize}.InputSlice${InputSlice}.${gcMode}.${ParallelGCThread}.MaxNewSize${youngGenSize}.${ConcGCThread}.log"
+# log file
+log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.${ConcGCThread}.log"
 
 
-##
+###
 # Functions
+
 
 
 function reset_sys_counter () {
@@ -126,16 +123,13 @@ function read_swap_counter () {
 
 
 
-
-##
+### 
 # Do the action
-
 
 count=1
 
 while [ $count -le $running_times ]
 do
-
 
 
   #log
@@ -149,7 +143,6 @@ do
   echo "" >> "${log_file}" 2>&1
   echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}" 2>&1
 
-
   # reset sys counter
   if [ "${enable_swap_counter}" = "1" ]
   then
@@ -157,16 +150,15 @@ do
   fi
 
   # run the application
-	echo "spark-submit --class org.apache.spark.basic.SparkTC   --conf "${confVar}"  ${HOME}/jars/sparkapp_2.12-1.0.jar ${InputSlice}  ${AppIterations}"
-  (time -p  spark-submit --class org.apache.spark.basic.SparkTC   --conf "${confVar}"  ${HOME}/jars/sparkapp_2.12-1.0.jar ${InputSlice}  ${AppIterations} ) >> "${log_file}" 2>&1
+	echo "spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${benchmark_jar_path}/skm/kmeans-1.1.jar ${dataset_path}/${InputDataSet} 4 ${AppIterations}"
+  (time -p  spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${benchmark_jar_path}/skm/kmeans-1.1.jar ${dataset_path}/${InputDataSet} 4 ${AppIterations} ) >> "${log_file}" 2>&1
+
 
   # read sys counter
   if [ "${enable_swap_counter}" = "1" ]
   then
     read_swap_counter >> ${log_file} 2>&1
   fi
-   
-
 
   count=`expr $count + 1 `
 done

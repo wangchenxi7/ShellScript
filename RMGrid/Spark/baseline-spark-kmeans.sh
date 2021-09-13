@@ -1,24 +1,21 @@
 #! /bin/bash
 
-#on/off : control the spark.executor.extraJavaOptions
-#on : "on"
+### Global environments
+dataset_path="/mnt/ssd/dataset/spark/dataset"
+benchmark_jar_path="/mnt/ssd/dataset/spark/jar"
 
-### object array recognition limit
-# all the applications set the same value to avoid the JIT performance overhead
 
 ### Parameters wait for inputing
 
-user="wcx"
-host_ip="zion-1.cs.ucla.edu"
 
-enable_swap_counter=1
+#enable_swap_counter=1
 swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
 swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
 
 
 ### Shell Scrip Control
-running_times=5
-tag="disable-slot-cache-reuse-baseline-spark-kmeans-25-10G-WokrerToCgroup-mem"
+running_times=3
+tag="enable-slot-cache-reuse-baseline-spark-kmeans-25mem-10G-WokrerToCgroup"
 
 ### Applications control
 AppIterations="10"
@@ -30,7 +27,12 @@ logLevel="info"
 #############
 
 
-#### Semeru ####
+#### Server Profile ####
+
+## Fusilli, 24 physical cores
+
+user="wcx"
+host_ip="fusilli.cs.ucla.edu"
 
 confVar="on"
 #youngRatio="7"	
@@ -38,8 +40,8 @@ confVar="on"
 maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
-ParallelGCThread="16"	# CPU server GC threads 
-ConcGCThread=4
+ParallelGCThread="24"	# CPU server GC threads 
+ConcGCThread=6
 
 #############################
 # Start run the application
@@ -100,7 +102,7 @@ ConcGCThread=4
 
 ##
 # log file
-log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.$ConcGCThread}.log"
+log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.${ConcGCThread}.log"
 
 
 ###
@@ -147,8 +149,8 @@ do
   fi
 
   # run the application
-	echo "spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${HOME}/adc/benchmark/spark/jar/skm/kmeans-1.1.jar ~/data/${InputDataSet} 4 ${AppIterations}"
-  (time -p  spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${HOME}/adc/benchmark/spark/jar/skm/kmeans-1.1.jar ~/data/${InputDataSet} 4 ${AppIterations} ) >> "${log_file}" 2>&1
+	echo "spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${benchmark_jar_path}/skm/kmeans-1.1.jar ${dataset_path}/${InputDataSet} 4 ${AppIterations}"
+  (time -p  spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${benchmark_jar_path}/skm/kmeans-1.1.jar ${dataset_path}/${InputDataSet} 4 ${AppIterations} ) >> "${log_file}" 2>&1
 
 
   # read sys counter
