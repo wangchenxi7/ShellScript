@@ -2,7 +2,7 @@
 
 
 # parameters
-core_num=16
+core_num=`nproc --all`
 
 
 #1

@@ -9,19 +9,25 @@
 ####
 #  Enable syscal/perf counter
 ####
-#enable_swap_counter=1
-swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
-swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
+enable_swap_counter=1
+
+## swap number counter
+#swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
+#swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
+
+## swap latency counter
+swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_latency_counter.o"
+swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_read_latency_counter.o"
 
 user="wcx"
-host_ip="zion-1.cs.ucla.edu"
+host_ip="fusilli.cs.ucla.edu"
 
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
 running_times=1
 #tag="disable-slot-cache-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
-tag="tmp-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
+tag="baseline-spark-lr-25-10G-WorkerToCgroup-mem"
 
 ### Applications control
 AppIterations="10"
@@ -98,7 +104,7 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
 
   else
 	#set a useless parameter for --conf
-	confVar="spark.app.name=SparkPageRank"
+	confVar="spark.app.name=SparkLR"
   fi
 
 ##

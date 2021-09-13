@@ -35,8 +35,8 @@ do
 	echo "set max/min freq of cpu${core_id}"
 
 	echo performance > /sys/devices/system/cpu/cpu${core_id}/cpufreq/scaling_governor
-	echo "2600000" >  /sys/devices/system/cpu/cpu${core_id}/cpufreq/scaling_min_freq
-	echo "2600000" >  /sys/devices/system/cpu/cpu${core_id}/cpufreq/scaling_max_freq
+	echo "2100000" >  /sys/devices/system/cpu/cpu${core_id}/cpufreq/scaling_min_freq
+	echo "2100000" >  /sys/devices/system/cpu/cpu${core_id}/cpufreq/scaling_max_freq
 
 	core_id=$(( core_id+1 ))
 
