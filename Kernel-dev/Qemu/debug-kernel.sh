@@ -68,8 +68,8 @@ numa_cmd=""
 
 ## Network
 #network="-netdev user,id=mynet0,net=192.168.76.0/24,dhcpstart=192.168.76.9"
-network="-net nic -net user,hostfwd=tcp::2222-:22"
-#network="-netdev user,id=network0 -device e1000,netdev=network0,mac=52:54:00:12:34:56  -net user,hostfwd=tcp::10022-:22"
+#network="-net nic -net user,hostfwd=tcp::2222-:22"
+network="-netdev user,id=network0 -device e1000,netdev=network0,mac=52:54:00:12:34:56  -net user,hostfwd=tcp::10022-:22"
 
 
 ####################
@@ -173,6 +173,15 @@ then
 	# Add nokaslr, console="ttyS0"
 	${numa_cmd} qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}    ${disk_image}    -nographic
 
+elif [ "${kernel_version}" = "linux" ]
+then
+	#For kernel in folder linux
+	echo "The boot partition is sda"
+	echo "${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda1 console=${output_console}' "
+
+	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda1 console=${output_console}"
+
+
 elif [ "${kernel_version}" = "linux-5.4" ]
 then
 	#For kernel 5.4
@@ -180,6 +189,7 @@ then
 	echo "${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda1 console=${output_console}' "
 
 	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda1 console=${output_console}"
+
 
 else
 	#use a specified kernel version
