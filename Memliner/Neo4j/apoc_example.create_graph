@@ -1,0 +1,10 @@
+CALL apoc.load.csv('wiki_test.csv',{
+    header:true,
+    spe:',',
+    mapping:{
+        id_from:{type:'int'},
+        id_to:{type:'int'}
+    }
+})
+YIELD lineNo, map,list
+RETURN *;
