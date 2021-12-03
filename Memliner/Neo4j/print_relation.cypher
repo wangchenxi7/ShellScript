@@ -1,3 +1,3 @@
-MATCH (source:Person)-[rel:KNOWS]->(target:Person)
+MATCH (source:Page)-[rel:LINKS]->(target:Page)
 
 RETURN source,rel,target;

@@ -22,4 +22,15 @@ CREATE (p1)-[r:KNOWS]->(p2)
 ",
 {batchSize:50000, iterateList:true, parallel:true,concurrency:48});
 
+CALL gds.graph.create(
+    'pl5',
+    'Person',
+    {
+        KNOWS: {
+            orientation: 'UNDIRECTED'
+        }
+    }
+);
 
+CALL gds.triangleCount.stats('pl5')
+YIELD globalTriangleCount, nodeCount
