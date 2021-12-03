@@ -4,7 +4,8 @@
 # Do NOT run with root or sudo
 
 #home_dir="/mnt/ssd/nvme"
-perf_command=${HOME}/linux-5.4/tools/perf/perf
+#perf_command=${HOME}/linux-5.4/tools/perf/perf
+perf_command=${HOME}/Semeru-dev/linux-4.11-rc8/tools/perf/perf
 #perf_command=/usr/bin/perf
 target_perf_data="${HOME}/Logs/perf.data"
 

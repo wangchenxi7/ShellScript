@@ -6,7 +6,8 @@
 
 # Environments
 home_dir="/mnt/ssd/wcx"
-perf_command=${home_dir}/linux-5.4/tools/perf/perf
+#perf_command=${home_dir}/linux-5.4/tools/perf/perf
+perf_command=${home_dir}/Semeru-dev/linux-4.11-rc8/tools/perf/perf
 output_file="${home_dir}/Logs/perf.data"
 
 

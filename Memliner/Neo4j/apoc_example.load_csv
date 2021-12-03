@@ -7,4 +7,4 @@ CALL apoc.load.csv('wiki_test.csv',{
     }
 })
 YIELD lineNo, map,list
-RETURN *;
+RETURN map;

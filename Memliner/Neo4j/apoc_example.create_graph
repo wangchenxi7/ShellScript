@@ -1,10 +1,19 @@
+CALL apoc.load.csv('pl_community_test.csv',{
+    header:true,
+    sep:','    
+})
+YIELD map
+
+CALL apoc.create.node(["Person"],{id:map.id, name:map.name})
+YIELD node
+RETURN node;
+
 CALL apoc.load.csv('wiki_test.csv',{
     header:true,
-    spe:',',
-    mapping:{
-        id_from:{type:'int'},
-        id_to:{type:'int'}
-    }
-})
-YIELD lineNo, map,list
-RETURN *;
+    sep:','
+}) 
+YIELD map
+CALL apoc.create.node(["Connection"],{from:map.id_from, to:map.id_to})
+YIELD node
+RETURN node;
+
