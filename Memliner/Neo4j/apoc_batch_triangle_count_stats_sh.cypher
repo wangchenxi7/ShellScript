@@ -12,7 +12,7 @@ YIELD map",
 
 
 CALL apoc.periodic.iterate(
-"CALL apoc.load.csv('pl_network-95m.csv',{
+"CALL apoc.load.csv('pl_network-48m.csv',{
     header:true,
     sep:','
 })
@@ -20,7 +20,7 @@ YIELD map",
 "MATCH (p1:Person {id:map.id_from}), (p2:Person {id:map.id_to})
 CREATE (p1)-[r:KNOWS]->(p2) 
 ",
-{batchSize:5000000, iterateList:true, parallel:true,concurrency:32});
+{batchSize:500000, iterateList:true, parallel:true,concurrency:16});
 
 CALL gds.graph.create(
     'pl5',

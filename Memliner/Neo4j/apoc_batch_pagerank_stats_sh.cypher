@@ -12,7 +12,7 @@ YIELD map",
 
 
 CALL apoc.periodic.iterate(
-"CALL apoc.load.csv('pl_network-95m.csv',{
+"CALL apoc.load.csv('pl_network-48m.csv',{
     header:true,
     sep:','
 })

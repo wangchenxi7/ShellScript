@@ -12,7 +12,7 @@ YIELD map",
 
 
 CALL apoc.periodic.iterate(
-"CALL apoc.load.csv('pl_network-95m.csv',{
+"CALL apoc.load.csv('pl_network-48m.csv',{
     header:true,
     sep:','
 })
@@ -20,7 +20,7 @@ YIELD map",
 "MATCH (p1:Page {name:map.id_from}), (p2:Page {name:map.id_to})
 CREATE (p1)-[:LINKS {weight: 0.75}]->(p2) 
 ",
-{batchSize:1000000, iterateList:true, parallel:true,concurrency:16});
+{batchSize:50000, iterateList:true, parallel:true,concurrency:64});
 
 
 
