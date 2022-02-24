@@ -97,25 +97,27 @@ do
 	confVar="spark.app.name=SparkPageRank"
   fi
 
-
+    
+    #Logfiles
+    log_file="${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log"
 
 
   #log
-  echo ""  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo ""  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo ""  >> "${log_file}" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${log_file}" 2>&1
+  echo ""  >> "${log_file}" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo "" >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
-  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+  echo "" >> "${log_file}" 2>&1
+  echo "" >> "${log_file}" 2>&1
+  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}" 2>&1
 
 
 
   # run the application
-	echo "spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/data/${InputDataSet} ${pagerankIteration}"
-  (time -p  spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/data/${InputDataSet} ${pagerankIteration} ) >> "${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log" 2>&1
+	echo "spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/dataset/${InputDataSet} ${pagerankIteration}"
+  (time -p  spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/dataset/${InputDataSet} ${pagerankIteration} ) >> "${log_file}" 2>&1
 
   count=`expr $count + 1 `
 done
