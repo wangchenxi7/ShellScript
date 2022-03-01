@@ -181,6 +181,16 @@ then
 
 	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr mitigations=off transparent_hugepage=madvise root=/dev/sda1 console=${output_console}"
 
+elif [ "${kernel_version}" = "linux-4.11-rc8" ]
+then
+     home_dir="${home_dir}/Semeru-dev"
+
+	#For kernel in folder linux
+	echo "The boot partition is sda"
+	echo "${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr transparent_hugepage=madvise loglevel=6 root=/dev/sda1 console=${output_console}' "
+
+	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr transparent_hugepage=madvise loglevel=6 root=/dev/sda1 console=${output_console}"
+
 
 elif [ "${kernel_version}" = "linux-5.4" ]
 then

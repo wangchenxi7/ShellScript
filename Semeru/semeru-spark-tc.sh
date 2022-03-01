@@ -6,8 +6,7 @@
 ### object array recognition limit
 # all the applications set the same value to avoid the JIT performance overhead
 
-
-### Parameters wait for inputing 
+### Parameters wait for inputing
 CPUMemPercentage=$1
 
 if [ -z "${CPUMemPercentage}" ]
@@ -19,12 +18,13 @@ fi
 
 ### Shell Scrip Control
 running_times=1
-tag="semeru-pagerank-${CPUMemPercentage}-mem"
+tag="semeru-spark-tc-${CPUMemPercentage}-mem"
 
 ### Applications control
-pagerankIteration="10"
-InputDataSet="out.wikipedia_link_pl"
-
+AppIterations="3"
+#InputDataSet="out.2g"
+#InputDataSet="out.wikipedia_link_en.2.9g"
+logLevel="info"
 
 #################
 ## First run
@@ -34,14 +34,12 @@ InputDataSet="out.wikipedia_link_pl"
 #### Semeru ####
 
 confVar="on"
+#youngRatio="5"	
 gcMode="Semeru"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 regionSize="512M"
 tlabSize="4096"
-ParallelGCThread="16"	# CPU server GC threads 
-logLevel="info"
-#logLevel="debug"
-
+#ParallelGCThread="32"	# CPU server GC threads 
 # Concurrent Thread is decided on Memory server
 
 
@@ -85,7 +83,7 @@ do
 		then
 			## Semeru, CPU server GC
 		
-			confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=120 -XX:G1RSetRegionEntries=4096   -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:SemeruLocalCachePercent=${CPUMemPercentage} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -Xnoclassgc  -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru=${logLevel},semeru+rdma=${logLevel} "
+			confVar="spark.executor.extraJavaOptions= -XX:RebuildThreshold=80 -XX:G1RSetRegionEntries=4096 -XX:MaxTenuringThreshold=3 -Xnoclassgc  -XX:EnableBitmap -XX:+UseG1GC  ${ParallelGCThread} -Xms${heapSize} -XX:SemeruLocalCachePercent=${CPUMemPercentage} -XX:G1HeapRegionSize=${regionSize}  -XX:TLABSize=${tlabSize} -XX:-UseCompressedOops -XX:MetaspaceSize=0x10000000 -XX:+SemeruEnableMemPool  -XX:+PrintGCDetails -Xlog:heap=${logLevel},semeru+rdma=${logLevel} "
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -94,18 +92,18 @@ do
 
   else
 	#set a useless parameter for --conf
-	confVar="spark.app.name=SparkPageRank"
+	confVar="spark.app.name=SparkTransiveClosure"
   fi
 
-    
-    #Logfiles
-    log_file="${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${pagerankIteration}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log"
 
+  log_file="${HOME}/Logs/${tag}.inputSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.LocalMemPecentage${CPUMemPercentage}.${gcMode}.parallelGC${ParallelGCThread}.log"
+  echo "Generate logs into ${log_file}"
+  echo ""
 
   #log
-  echo ""  >> "${log_file}" 2>&1
+  echo ""                 >> "${log_file}" 2>&1
   echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${log_file}" 2>&1
-  echo ""  >> "${log_file}" 2>&1
+  echo ""                 >> "${log_file}" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
@@ -116,8 +114,8 @@ do
 
 
   # run the application
-	echo "spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/dataset/${InputDataSet} ${pagerankIteration}"
-  (time -p  spark-submit --class JavaPageRank   --conf "${confVar}"  ${HOME}/jars/pagerank.jar ~/dataset/${InputDataSet} ${pagerankIteration} ) >> "${log_file}" 2>&1
+	echo "spark-submit --class org.apache.spark.basic.SparkTC   --conf "${confVar}"  ${HOME}/jars/sparkapp_2.12-1.0.jar 32 ${AppIterations}"
+  (time -p  spark-submit --class org.apache.spark.basic.SparkTC   --conf "${confVar}"  ${HOME}/jars/sparkapp_2.12-1.0.jar 32 ${AppIterations} ) >> "${log_file}" 2>&1
 
   count=`expr $count + 1 `
 done
