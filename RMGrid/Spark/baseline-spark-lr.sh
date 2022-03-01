@@ -1,15 +1,15 @@
 #! /bin/bash
 
-#on/off : control the spark.executor.extraJavaOptions
-#on : "on"
 
-### object array recognition limit
-# all the applications set the same value to avoid the JIT performance overhead
+####
+# Global environments
+dataset_path="/mnt/ssd/dataset/spark/dataset"
+
 
 ####
 #  Enable syscal/perf counter
 ####
-enable_swap_counter=1
+#enable_swap_counter=1
 
 ## swap number counter
 #swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
@@ -19,15 +19,13 @@ enable_swap_counter=1
 swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_latency_counter.o"
 swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_read_latency_counter.o"
 
-user="wcx"
-host_ip="fusilli.cs.ucla.edu"
 
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
 running_times=1
 #tag="disable-slot-cache-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
-tag="baseline-spark-lr-25-10G-WorkerToCgroup-mem"
+tag="baseline-spark-lr-25mem-10G-WorkerToCgroup-75-clean-page-reserving"
 
 ### Applications control
 AppIterations="10"
@@ -39,7 +37,10 @@ logLevel="info"
 #############
 
 
-#### Semeru ####
+#### Fusilli, 24 physical cores ####
+
+user="wcx"
+host_ip="fusilli.cs.ucla.edu"
 
 confVar="on"
 #youngRatio="7"	
@@ -47,8 +48,8 @@ confVar="on"
 maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
-ParallelGCThread="16"	# CPU server GC threads 
-ConcGCThread=4
+ParallelGCThread="24"	# CPU server GC threads 
+ConcGCThread=6
 
 #############################
 # Start run the application
@@ -157,8 +158,8 @@ do
 
 
   # run the application
-	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ~/dataset/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR  --conf "${confVar}"  ${HOME}/jars/lr.jar ~/dataset/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
+	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations}"
+  (time -p  spark-submit --class SparkLR  --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
 
   # read sys counter
   if [ "${enable_swap_counter}" = "1" ]

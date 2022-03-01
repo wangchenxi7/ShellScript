@@ -11,9 +11,16 @@
 ## Global environments
 dataset_path="/mnt/ssd/dataset/spark/dataset"
 
+## perf counter
+enable_swap_counter=1
+
+## swap number counter
+swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
+swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
+
 
 ### Shell Scrip Control
-running_times=3
+running_times=1
 tag="rmgrid-spark-lr-25-10G-workerToCgroup"
 
 ### Applications control
@@ -30,6 +37,9 @@ logLevel="info"
 
 ## RMGrid Fusilli, 24 physical core ####
 
+user="wcx"
+host_ip="fusilli.cs.ucla.edu"
+
 confVar="on"
 #youngRatio="7"	
 #youngGenSize="4000M"
@@ -43,13 +53,13 @@ ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=20 -XX:I
 # better fix the meta space, -XX:MetaspaceSize=268435456 -Xnoclassgc
 
 #SemeruJavaOption="-XX:+SemeruEnableMemPool  -XX:+SemeruEnableUFFD -XX:+SemeruEnablePrefetchChunkAffinity "
+
+
 #############################
 # Start run the application
 #############################
 
 echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-dram-old-nvm)"
-
-
 
 
   #### run the fisrt application
@@ -103,6 +113,30 @@ echo "parameter format: input set, pageRank iteration num, basic/off-heap/young-
   fi
 
 
+#######
+# Logs
+##
+# log filse
+
+log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.${ConcGCThread}.log"
+
+
+############
+## Functions
+
+
+function reset_sys_counter () {
+  echo " reset swap counter."
+  ssh -t ${user}@${host_ip}   ${swap_counter_reset_exe}
+}
+
+function read_swap_counter () {
+  echo "read swap counter"
+  ssh -t ${user}@${host_ip}   ${swap_counter_read_exe}
+}
+
+
+
 
 count=1
 
@@ -110,22 +144,36 @@ while [ $count -le $running_times ]
 do
 
   #log
-  echo ""                 >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
-  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
-  echo ""                 >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
+  echo ""                 >> "${log_file}" 2>&1
+  echo "Runtime Iteration : $count Times, with executor config ${confVar} " >> "${log_file}" 2>&1
+  echo ""                 >> "${log_file}" 2>&1
   echo "Runtime Iteration : $count Times, mode $mode, with executor config ${confVar}" 
 
 
-  echo "" >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
-  echo "" >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
-  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
+  echo "" >> "${log_file}" 2>&1
+  echo "" >> "${log_file}" 2>&1
+  echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}" 2>&1
 
-  echo "ConcurrentGC tuning : ConcurrentCC threads ${ConcGCThread}, ${ConcGCTuning} "  >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
+  echo "ConcurrentGC tuning : ConcurrentCC threads ${ConcGCThread}, ${ConcGCTuning} "  >> "${log_file}" 2>&1
+
+  # reset sys counter
+  if [ "${enable_swap_counter}" = "1" ]
+  then
+    reset_sys_counter >> ${log_file} 2>&1
+  fi
 
 
   # run the application
 	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations}"
-  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations} ) >> "${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.${ConcGCThread}.maxYoungGen${maxYoungGen}.${gcMode}.parallelGC${ParallelGCThread}.${ConcGCThread}.log" 2>&1
+  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
+
+
+  # read sys counter
+  if [ "${enable_swap_counter}" = "1" ]
+  then
+    read_swap_counter >> ${log_file} 2>&1
+  fi
+
 
   count=`expr $count + 1 `
 done

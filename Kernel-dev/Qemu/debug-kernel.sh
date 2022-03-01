@@ -5,8 +5,8 @@
 ####################
 output_console="ttyS0"
 
-#wait_for_gdb="yes"  # yes or no
-wait_for_gdb="no"
+wait_for_gdb="yes"  # yes or no
+#wait_for_gdb="no"
 
 
 ##############
@@ -37,7 +37,7 @@ memory_size="4G"
 #memory_size="60G"  # leave 4G for other processes
 
 ## core number
-core_num=4
+core_num=8
 
 ## Chose start img or initrd
 #initram_dir="teeny-linux/obj/initramfs-busybox-x86.cpio.gz"
@@ -177,9 +177,9 @@ elif [ "${kernel_version}" = "linux" ]
 then
 	#For kernel in folder linux
 	echo "The boot partition is sda"
-	echo "${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr root=/dev/sda1 console=${output_console}' "
+	echo "${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage ${initram_dir}    ${disk_image}    -nographic -append 'nokaslr mitigations=off transparent_hugepage=madvise root=/dev/sda1 console=${output_console}' "
 
-	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr root=/dev/sda1 console=${output_console}"
+	${numa_cmd}  qemu-system-x86_64 -s ${wait_for_gdb}  ${network}   -m ${memory_size}  -smp ${core_num}   -kernel  ${home_dir}/${kernel_version}/arch/x86/boot/bzImage  ${initram_dir}    ${disk_image}    -nographic -append "nokaslr mitigations=off transparent_hugepage=madvise root=/dev/sda1 console=${output_console}"
 
 
 elif [ "${kernel_version}" = "linux-5.4" ]

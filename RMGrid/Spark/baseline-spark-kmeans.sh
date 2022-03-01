@@ -14,8 +14,8 @@ swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remote
 
 
 ### Shell Scrip Control
-running_times=3
-tag="enable-slot-cache-reuse-baseline-spark-kmeans-25mem-10G-WokrerToCgroup"
+running_times=1
+tag="baseline-spark-kmeans-25mem-10G-WokrerToCgroup-75-clean-page-reserving"
 
 ### Applications control
 AppIterations="10"

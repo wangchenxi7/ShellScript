@@ -11,7 +11,7 @@
 ####
 #  Enable syscal/perf counter
 ####
-#enable_swap_counter=5
+#enable_swap_counter=1
 swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
 swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
 
@@ -22,9 +22,9 @@ host_ip="zion-1.cs.ucla.edu"
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
-running_times=2
+running_times=1
 #tag="disable-slot-cache-baseline-spark-tc-25-mem-10g-vma"
-tag="enable-slot-cache-baseline-spark-tc-25-mem-8g-vma"
+tag="baseline-spark-tc-25mem-8g-75-clean-page-reserving"
 
 ### Applications control
 AppIterations="3"
