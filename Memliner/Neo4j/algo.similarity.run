@@ -1,0 +1,12 @@
+MATCH (p:MNISTItem)
+WITH {item:id(p), weights: p.embedding} as userData
+WITH collect(userData) as data
+CALL algo.similarity.euclidean(data, {
+  topK:20, write:true, 
+  showComputations: true, 
+  writeRelationshipType: "SIMILAR20" 
+})
+YIELD nodes, similarityPairs, computations
+RETURN nodes, 
+       apoc.number.format(similarityPairs) AS similarityPairs, 
+       apoc.number.format(computations) AS computations

@@ -1,0 +1,13 @@
+MATCH (p:Person)-[:LIKES]->(cuisine)
+WITH {item:id(p), categories: collect(id(cuisine))} AS userData
+WITH collect(userData) AS data
+CALL gds.alpha.ml.ann.stream({
+  data: data,
+  algorithm: 'jaccard',
+  similarityCutoff: 0.1,
+  randomSeed: 1,
+  concurrency: 4
+})
+YIELD item1, item2, similarity
+return gds.util.asNode(item1).name AS from, gds.util.asNode(item2).name AS to, similarity
+ORDER BY from

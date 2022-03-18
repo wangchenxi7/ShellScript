@@ -1,0 +1,29 @@
+CREATE
+ (french:Cuisine {name:'French'}),
+ (italian:Cuisine {name:'Italian'}),
+ (indian:Cuisine {name:'Indian'}),
+ (lebanese:Cuisine {name:'Lebanese'}),
+ (portuguese:Cuisine {name:'Portuguese'}),
+
+ (zhen:Person {name: 'Zhen'}),
+ (praveena:Person {name: 'Praveena'}),
+ (michael:Person {name: 'Michael'}),
+ (arya:Person {name: 'Arya'}),
+ (karin:Person {name: 'Karin'}),
+
+ (praveena)-[:LIKES]->(indian),
+ (praveena)-[:LIKES]->(portuguese),
+
+ (zhen)-[:LIKES]->(french),
+ (zhen)-[:LIKES]->(indian),
+
+ (michael)-[:LIKES]->(french),
+ (michael)-[:LIKES]->(italian),
+ (michael)-[:LIKES]->(indian),
+
+ (arya)-[:LIKES]->(lebanese),
+ (arya)-[:LIKES]->(italian),
+ (arya)-[:LIKES]->(portuguese),
+
+ (karin)-[:LIKES]->(lebanese),
+ (karin)-[:LIKES]->(italian)
