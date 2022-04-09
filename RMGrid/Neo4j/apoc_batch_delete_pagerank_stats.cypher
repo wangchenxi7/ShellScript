@@ -10,7 +10,7 @@ CALL gds.graph.drop('myGraph');
 //CALL apoc.periodic.iterate(
 //  'MATCH ()-[r:LINKS]-() RETURN r',
 //  'DELETE r',
-//  {batchSize: 10000,iterateList:true, parallel:true,concurrency:24}
+//  {batchSize: 100000,iterateList:true, parallel:true,concurrency:24}
 //)
 //YIELD timeTaken, operations
 //RETURN timeTaken, operations;
@@ -19,7 +19,7 @@ CALL gds.graph.drop('myGraph');
 CALL apoc.periodic.iterate(
   'MATCH (n) RETURN n',
   'DELETE n',
-  {batchSize: 10000,iterateList:true, parallel:true,concurrency:24}
+  {batchSize: 100000,iterateList:true, parallel:true,concurrency:24}
 )
 YIELD timeTaken, operations
 RETURN timeTaken, operations;

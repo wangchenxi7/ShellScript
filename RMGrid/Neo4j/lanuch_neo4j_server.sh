@@ -31,3 +31,4 @@ sleep 2
 # Use the optional, console, if you want to print all the log on the screen
 echo "${NUMA_CMD} ${CGROUP_CMD} neo4j console"
 ${NUMA_CMD} ${CGROUP_CMD} neo4j console
+
