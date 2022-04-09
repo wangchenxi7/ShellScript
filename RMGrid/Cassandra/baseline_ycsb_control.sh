@@ -9,11 +9,11 @@ host_ip="131.179.96.196"
 # optimal - all local
 # baseline - 25% 50% local memory
 #tag="optimal"
-#tag="baseline-mem-25-4read-6insert"
-tag="co-run-baseline-mem-25-4read-6insert"
+tag="baseline-mem-50-4read-6insert"
+#tag="co-run-baseline-mem-50-4read-6insert"
 
 # execution time
-execution_num=5
+execution_num=8
 
 ####
 # YCSB controls
