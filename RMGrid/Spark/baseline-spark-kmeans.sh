@@ -14,8 +14,15 @@ swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remote
 
 
 ### Shell Scrip Control
-running_times=1
-tag="baseline-spark-kmeans-25mem-10G-WokrerToCgroup-75-clean-page-reserving"
+running_times=5
+
+## 25% local memory
+#tag="baseline-spark-kmeans-25mem-10G-WokrerToCgroup-75-clean-page-reserving"
+#tag="canvas-baseline-spark-kmeans-25mem-10G-WokrerToCgroup"
+#tag="canvas-corun-baselineKernel-spark-kmeans-25mem-10G-WokrerToCgroup-mitigation-off"
+
+## 50% local memory
+tag="individual-spark-kmeans-50mem-18G-WokrerToCgroup"
 
 ### Applications control
 AppIterations="10"

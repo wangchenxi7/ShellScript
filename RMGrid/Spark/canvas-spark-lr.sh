@@ -1,35 +1,42 @@
 #! /bin/bash
 
-### Global environments
-dataset_path="/mnt/ssd/dataset/spark/dataset"
-benchmark_jar_path="/mnt/ssd/dataset/spark/jar"
+#on/off : control the spark.executor.extraJavaOptions
+#on : "on"
 
+### object array recognition limit
+# all the applications set the same value to avoid the JIT performance overhead
 
 ### Parameters wait for inputing
 
+## Global environments
+dataset_path="/mnt/ssd/dataset/spark/dataset"
 
-#enable_swap_counter=1
-swap_counter_reset_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
-swap_counter_read_exe="/mnt/ssd/wcx/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
+## perf counter
+enable_swap_counter=0
+
+## swap number counter
+swap_counter_reset_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_reset_counter.o"
+swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_read_counter.o"
 
 
 ### Shell Scrip Control
-running_times=1
-tag="rmgrid-spark-kmeans-25mem-10G-WokrerToCgroup"
+running_times=10
+#tag="canvas-corun@canvas-spark-lr-25-10G-workerToCgroup"
+tag="canvas-corun@canvas-spark-lr-50-18G-workerToCgroup"
 
 ### Applications control
-AppIterations="10"
-InputDataSet="out.1.6g"
+AppIterations="8"
+InputDataSet="out.wikipedia_link_en.2.9g"
 logLevel="info"
 
 #################
 ## First run
 #############
 
+###
+# Profile for different resources
 
-#### Server Profile ####
-
-## Fusilli, 24 physical cores
+## RMGrid Fusilli, 24 physical core ####
 
 user="wcx"
 host_ip="fusilli.cs.ucla.edu"
@@ -41,13 +48,19 @@ maxYoungGen="4g"
 gcMode="G1"
 heapSize="32g" # This is -Xms.  -Xmx is controlled by Spark configuration
 ParallelGCThread="24"	# CPU server GC threads 
-ConcGCThread=1
-ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=20 -XX:InitiatingHeapOccupancyPercent=75 -Xnoclassgc -XX:MetaspaceSize=0x8000000"
+ConcGCThread=2
+ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=20 -XX:InitiatingHeapOccupancyPercent=75 "
+
+# better fix the meta space, -XX:MetaspaceSize=268435456 -Xnoclassgc
+
+#SemeruJavaOption="-XX:+SemeruEnableMemPool  -XX:+SemeruEnableUFFD -XX:+SemeruEnablePrefetchChunkAffinity "
+
 
 #############################
 # Start run the application
 #############################
 
+echo "parameter format: input set, Logistic Regression(LR) iteration num, basic/off-heap/young-dram-old-nvm)"
 
 
   #### run the fisrt application
@@ -88,7 +101,7 @@ ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=20 -XX:I
      # Print methods compiled by C1 and C2
       #JITOption2="-XX:+CITraceTypeFlow"
 	
-			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread} ${ConcGCTuning} -Xms${heapSize} ${youngRatio}  -XX:+PrintGCDetails"
+			confVar="spark.executor.extraJavaOptions= ${JITOption} ${JITOption2} -XX:MaxNewSize=${maxYoungGen}  -XX:+UseG1GC ${ParallelGCThread} ${ConcGCThread} ${ConcGCTuning}  -Xms${heapSize} ${youngRatio} ${SemeruJavaOption} -XX:+PrintGCDetails"
 
 		else
 			echo "!! GC Mode ERROR  !!"
@@ -101,14 +114,16 @@ ConcGCTuning="-XX:-G1UseAdaptiveIHOP -XX:G1RSetUpdatingPauseTimePercent=20 -XX:I
   fi
 
 
+#######
+# Logs
 ##
-# log file
+# log filse
+
 log_file="${HOME}/Logs/${tag}.InputDataSet${InputDataSet}.Iteration${AppIterations}.heapSize${heapSize}.maxYoungGen${maxYoungGen}.${gcMode}.${ParallelGCThread}.${ConcGCThread}.log"
 
 
-###
-# Functions
-
+############
+## Functions
 
 
 function reset_sys_counter () {
@@ -123,14 +138,11 @@ function read_swap_counter () {
 
 
 
-### 
-# Do the action
 
 count=1
 
 while [ $count -le $running_times ]
 do
-
 
   #log
   echo ""                 >> "${log_file}" 2>&1
@@ -143,15 +155,18 @@ do
   echo "" >> "${log_file}" 2>&1
   echo "Run ${gcMode} mode, with ${Iter} Iteration"  >> "${log_file}" 2>&1
 
+  echo "ConcurrentGC tuning : ConcurrentCC threads ${ConcGCThread}, ${ConcGCTuning} "  >> "${log_file}" 2>&1
+
   # reset sys counter
   if [ "${enable_swap_counter}" = "1" ]
   then
     reset_sys_counter >> ${log_file} 2>&1
   fi
 
+
   # run the application
-	echo "spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${benchmark_jar_path}/skm/kmeans-1.1.jar ${dataset_path}/${InputDataSet} 4 ${AppIterations}"
-  (time -p  spark-submit --class JavaKMeansExample    --conf "${confVar}"  ${benchmark_jar_path}/skm/kmeans-1.1.jar ${dataset_path}/${InputDataSet} 4 ${AppIterations} ) >> "${log_file}" 2>&1
+	echo "spark-submit --class SparkLR    --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations}"
+  (time -p  spark-submit --class SparkLR   --conf "${confVar}"  ${HOME}/jars/lr.jar ${dataset_path}/${InputDataSet}  ${AppIterations} ) >> "${log_file}" 2>&1
 
 
   # read sys counter
@@ -159,6 +174,7 @@ do
   then
     read_swap_counter >> ${log_file} 2>&1
   fi
+
 
   count=`expr $count + 1 `
 done

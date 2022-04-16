@@ -18,13 +18,16 @@ fi
 shell_script_home="${HOME}/ShellScript/RMGrid/Neo4j"
 bench_to_run="pagerank_stats"
 
-## Log tag
-#tag="neo4j-corun-${operation}-${bench_to_run}-25-mem-96G-swap"
-#tag="neo4j-corun-${operation}-${bench_to_run}-50-mem-56G-swap"
-#tag="neo4j-individual-${operation}-${bench_to_run}-50-mem-24G-swap"
+## 25% local memory
+tag="neo4j-corun@baseline-${operation}-${bench_to_run}-25-mem-96G-swap"
+#tag="neo4j-corun-${operation}-${bench_to_run}-25-mem-72G-swap"
 
 #tag="neo4j-canvas-corun-${operation}-${bench_to_run}-25-mem-32G-swap"
-tag="neo4j-canvas-corun-${operation}-${bench_to_run}-50-mem-56G-swap"
+
+## 50% local memory
+#tag="neo4j-individual-${operation}-${bench_to_run}-50-mem-24G-swap"
+#tag="neo4j-corun-${operation}-${bench_to_run}-50-mem-56G-swap"
+#tag="neo4j-corun@baseline-${operation}-${bench_to_run}-50-mem-56G-swap"
 
 ##
 # Neo4j home
