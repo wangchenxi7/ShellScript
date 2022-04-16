@@ -23,12 +23,14 @@ swap_counter_read_exe="${HOME}/System-Dev-Testcase/block_device/swap/remoteswap_
 ### Parameters wait for inputing
 
 ### Shell Scrip Control
-running_times=5
+running_times=10
 
 ## 25% local memory
 #tag="disable-slot-cache-baseline-spark-lr-25-10G-WorkerToCgroup-mem"
-tag="individual-spark-lr-25mem-10G-WorkerToCgroup-32G-swap"
+#tag="individual-spark-lr-25mem-10G-WorkerToCgroup-32G-swap"
 #tag="canvas-corun-baselineKernel-spark-lr-50mem-10G-WorkerToCgroup-mitigationOff"
+#tag="spark-lr-corun@isolation-only-25mem-10G-WorkerToCgroup-mitigationOff"
+tag="spark-lr-corun@isolation-with-slot-opt-25mem-10G-WorkerToCgroup-mitigationOff"
 
 ## 50% local memory
 #tag="individual-spark-lr-50mem-18G-WorkerToCgroup"
