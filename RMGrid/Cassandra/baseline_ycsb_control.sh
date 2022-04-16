@@ -9,11 +9,15 @@ host_ip="131.179.96.196"
 # optimal - all local
 # baseline - 25% 50% local memory
 #tag="optimal"
-tag="baseline-mem-50-4read-6insert"
+#tag="baseline-mem-50-4read-6insert"
 #tag="co-run-baseline-mem-50-4read-6insert"
+#tag="individual-baseline-mem-25-4read-6insert-32GB-swap"
+#tag="cassandra-corun@isolation-only-mem-25-4read-6insert-reduce2G-swap"
+tag="cassandra-corun@isolation-with-opt-mem-25-4read-6insert-reduce2G-swap"
+#tag="cassandra-corun@canvas-mem-25-4read-6insert"
 
 # execution time
-execution_num=8
+execution_num=5
 
 ####
 # YCSB controls
@@ -27,6 +31,7 @@ records=10000000
 
 # The behavior, read/update/delete/insert
 # The workloads are defiend under ycsb/workload/
+
 #workload="workloada"
 #workload="workloadMemLinerUpdateIntensive"
 #workload="workloadMemLinerUpdateInsert"

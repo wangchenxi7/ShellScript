@@ -9,7 +9,7 @@ records=10000000
 
 ##
 # create the ycsb usertable
-#cqlsh --request-timeout=600000 ${host_ip} -f ${cur_dir}/create_ycsb_table.cqlsh
+cqlsh --request-timeout=600000 ${host_ip} -f ${cur_dir}/create_ycsb_table.cqlsh
 
 
 ##

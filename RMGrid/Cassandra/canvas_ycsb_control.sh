@@ -10,7 +10,8 @@ host_ip="131.179.96.196"
 # baseline - 25% 50% local memory
 #tag="optimal"
 #tag="baseline-mem-25-4read-6insert"
-tag="canvas-mem-50-4read-6insert"
+#tag="canvas-mem-50-4read-6insert"
+tag="corun@canvas-mem-25-4read-6insert"
 
 # execution time
 execution_num=8
