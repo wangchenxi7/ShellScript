@@ -19,7 +19,9 @@ shell_script_home="${HOME}/ShellScript/RMGrid/Neo4j"
 bench_to_run="pagerank_stats"
 
 ## 25% local memory
-tag="neo4j-corun@baseline-${operation}-${bench_to_run}-25-mem-96G-swap"
+#tag="neo4j-corun@baseline-${operation}-${bench_to_run}-25-mem-96G-swap"
+#tag="neo4j-corun@isolation-only-${operation}-${bench_to_run}-25-mem-96G-swap"
+tag="neo4j-corun@isolation-with-slot-opt-${operation}-${bench_to_run}-25-mem-96G-swap"
 #tag="neo4j-corun-${operation}-${bench_to_run}-25-mem-72G-swap"
 
 #tag="neo4j-canvas-corun-${operation}-${bench_to_run}-25-mem-32G-swap"
