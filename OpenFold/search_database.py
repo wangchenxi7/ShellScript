@@ -76,7 +76,10 @@ with open('target.fasta', 'wt') as f:
 jackhmmer_binary_path = '/usr/bin/jackhmmer'
 dbs = []
 
-num_jackhmmer_chunks = {'uniref90': 59, 'smallbfd': 17, 'mgnify': 71}
+#num_jackhmmer_chunks = {'uniref90': 59, 'smallbfd': 17, 'mgnify': 71}
+# debug run
+num_jackhmmer_chunks = {'uniref90': 2, 'smallbfd': 2, 'mgnify': 2}
+
 total_jackhmmer_chunks = sum(num_jackhmmer_chunks.values())
 #with tqdm.notebook.tqdm(total=total_jackhmmer_chunks, bar_format=TQDM_BAR_FORMAT) as pbar:
 # Use the default bar format 
@@ -88,7 +91,8 @@ with tqdm.notebook.tqdm(total=total_jackhmmer_chunks) as pbar:
   jackhmmer_uniref90_runner = jackhmmer.Jackhmmer(
       binary_path=jackhmmer_binary_path,
       n_cpu=20,
-      database_path=f'/root/database/uniref90.fasta',
+      database_path=f'https://storage.googleapis.com/alphafold-colab{source}/latest/uniref90_2021_03.fasta',
+      #database_path=f'/root/database/uniref90.fasta',
       get_tblout=True,
       num_streamed_chunks=num_jackhmmer_chunks['uniref90'],
       streaming_callback=jackhmmer_chunk_callback,
@@ -98,8 +102,9 @@ with tqdm.notebook.tqdm(total=total_jackhmmer_chunks) as pbar:
   pbar.set_description('Searching smallbfd')
   jackhmmer_smallbfd_runner = jackhmmer.Jackhmmer(
       binary_path=jackhmmer_binary_path,
-      #database_path=f'https://storage.googleapis.com/alphafold-colab{source}/latest/bfd-first_non_consensus_sequences.fasta',
-      database_path=f'/root/database/bfd-first_non_consensus_sequences.fasta',
+      n_cpu=20,
+      database_path=f'https://storage.googleapis.com/alphafold-colab{source}/latest/bfd-first_non_consensus_sequences.fasta',
+      #database_path=f'/root/database/bfd-first_non_consensus_sequences.fasta',
       get_tblout=True,
       num_streamed_chunks=num_jackhmmer_chunks['smallbfd'],
       streaming_callback=jackhmmer_chunk_callback,
@@ -109,8 +114,9 @@ with tqdm.notebook.tqdm(total=total_jackhmmer_chunks) as pbar:
   pbar.set_description('Searching mgnify')
   jackhmmer_mgnify_runner = jackhmmer.Jackhmmer(
       binary_path=jackhmmer_binary_path,
-      #database_path=f'https://storage.googleapis.com/alphafold-colab{source}/latest/mgy_clusters_2019_05.fasta',
-      database_path=f'/root/databse/mgy_clusters_2018_12.fa',
+      n_cpu=20,
+      database_path=f'https://storage.googleapis.com/alphafold-colab{source}/latest/mgy_clusters_2019_05.fasta',
+      #database_path=f'/root/databse/mgy_clusters_2018_12.fa',
       get_tblout=True,
       num_streamed_chunks=num_jackhmmer_chunks['mgnify'],
       streaming_callback=jackhmmer_chunk_callback,
