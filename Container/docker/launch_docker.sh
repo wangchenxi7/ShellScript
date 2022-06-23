@@ -5,7 +5,8 @@ docker_name="$1"
 
 if [ -z "${docker_name}" ]
 then 
-	echo "Input docker name"	
+	echo "Input docker image name"	
+	echo "Check the stored image name via : docker images ls"
 	read docker_name
 fi
 
@@ -22,4 +23,7 @@ fi
 # Run docker in background
 echo "sudo docker run --gpus all -d -i -t --rm ${docker_name}"
 sudo docker run --gpus all -d -i -t --rm ${docker_name}
+
+# Show the running docker containers 
+sudo docker container ls 
 
