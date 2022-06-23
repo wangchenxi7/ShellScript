@@ -76,9 +76,9 @@ with open('target.fasta', 'wt') as f:
 jackhmmer_binary_path = '/usr/bin/jackhmmer'
 dbs = []
 
-#num_jackhmmer_chunks = {'uniref90': 59, 'smallbfd': 17, 'mgnify': 71}
-# debug run
-num_jackhmmer_chunks = {'uniref90': 2, 'smallbfd': 2, 'mgnify': 2}
+num_jackhmmer_chunks = {'uniref90': 59, 'smallbfd': 17, 'mgnify': 71}
+# debug run - download a small database slices
+#num_jackhmmer_chunks = {'uniref90': 2, 'smallbfd': 2, 'mgnify': 2}
 
 total_jackhmmer_chunks = sum(num_jackhmmer_chunks.values())
 #with tqdm.notebook.tqdm(total=total_jackhmmer_chunks, bar_format=TQDM_BAR_FORMAT) as pbar:

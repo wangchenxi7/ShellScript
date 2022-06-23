@@ -189,6 +189,14 @@ class Jackhmmer:
 
         return raw_output
 
+
+    # Query the expression against the database
+    # E.g.,
+    # query('target.fasta')
+    # The content of the target.fasta
+    # >query
+    # MAAHKGAEHHHKAAEHHEQAAKHHHAAAEHHEKGEHEQAAHHADTAYAHHKHAEEHAAQAAKHDAEHHAPKPHroot@1e5f238442ac
+    #
     def query(self, input_fasta_path: str) -> Sequence[Mapping[str, Any]]:
         """Queries the database using Jackhmmer."""
         if self.num_streamed_chunks is None:
@@ -213,13 +221,15 @@ class Jackhmmer:
 
         # end of debug
 
-        # ? delete the downloaded chunks ??
+        ##
+        # debug - donot remove the downloaded database
         # Remove existing files to prevent OOM
-        for f in glob.glob(db_local_chunk("[0-9]*")):
-            try:
-                os.remove(f)
-            except OSError:
-                print(f"OSError while deleting {f}")
+        #for f in glob.glob(db_local_chunk("[0-9]*")):
+        #    try:
+        #        os.remove(f)
+        #        print("delete data",f)
+        #    except OSError:
+        #        print(f"OSError while deleting {f}")
 
         # Download the (i+1)-th chunk while Jackhmmer is running on the i-th chunk
         #with futures.ThreadPoolExecutor(max_workers=2) as executor:
@@ -227,37 +237,40 @@ class Jackhmmer:
             chunked_output = []
             for i in range(1, self.num_streamed_chunks + 1):
                 # Copy the chunk locally
-                print("process the chunk:",i)
+                print("process the chunk:",i,"out of ", self.num_streamed_chunks, " chunks")
 
-                # Fetch the first chunk from url on-demand
-                if i == 1:
-                    future = executor.submit(
-                        request.urlretrieve,
-                        db_remote_chunk(i),
-                        db_local_chunk(i),
-                    )
+                # 1) Download the chunks from remote url
+                # request.urlretrieve is the function
+                # parameter#1 : db_remote_chunk(i)
+                # parameter#2 : db_local_chunk(i)
+                #if i == 1:
+                #    future = executor.submit(
+                #        request.urlretrieve,
+                #        db_remote_chunk(i),
+                #        db_local_chunk(i),
+                #    )
 
-                # Process the ith chunk and prefetch the (i+1)th chunk
-                # Store the fetched chunk in next_future
-                if i < self.num_streamed_chunks:
-                    next_future = executor.submit(
-                        request.urlretrieve,
-                        db_remote_chunk(i + 1),
-                        db_local_chunk(i + 1),
-                    )
+                # Process the ith chunk and download the (i+1)th chunk
+                #if i < self.num_streamed_chunks:
+                #    next_future = executor.submit(
+                #        request.urlretrieve,
+                #        db_remote_chunk(i + 1),
+                #        db_local_chunk(i + 1),
+                #    )
 
-                # Run Jackhmmer with the chunk
-                future.result()
+                # 2) Run Jackhmmer with the chunk
+                #future.result()
                 chunked_output.append(
                     self._query_chunk(input_fasta_path, db_local_chunk(i))
                 )
 
-                # Remove the local copy of the chunk
+                # 3) Remove the local copy of the chunk
                 #os.remove(db_local_chunk(i))
 
                 # keep the local copy of the data
 
-                future = next_future
+                # 4) Print the results
+                #future = next_future
                 if self.streaming_callback:
                     self.streaming_callback(i)
         return chunked_output
